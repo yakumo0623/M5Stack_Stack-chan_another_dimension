@@ -4,10 +4,12 @@
 
 extern m5avatar::Avatar avatar;
 extern String openai_apikey;
+extern uint8_t config_word_count;
 extern String config_tone;
 extern String config_age;
 extern String config_first_person;
 extern String config_second_person;
+extern uint16_t https_timeout;
 
 constexpr int chat_history_max = 5;
 std::deque<String> chat_history;
@@ -30,7 +32,7 @@ ChatGPT::ChatGPT() {
     role += "一人称は、" + config_first_person + "、二人称は、" + config_second_person + "です。";
     role += "私の発言がポジティブの場合、（ポジティブ）を出力し、その後、共感します。";
     role += "私の発言がネガティブの場合、（ネガティブ）を出力し、その後、慰めます。";
-    role += "応答の最大文字数は３０文字です。";
+    role += "応答の最大文字数は" + String(config_word_count) + "文字です。";
 }
 
 ChatGPT::~ChatGPT() {
@@ -40,7 +42,7 @@ String ChatGPT::completions(String text) {
     M5.Log.println("ChatGPT：開始");
     uint32_t start_time = millis();
 
-    https.setTimeout(30000);
+    https.setTimeout(https_timeout);
     if (!https.begin(url, root_ca_openai)) {
         M5.Log.println("ChatGPT：接続失敗");
         return "";

@@ -5,6 +5,7 @@
 extern m5avatar::Avatar avatar;
 extern String voicevox_apikey;
 extern uint8_t config_speaker;
+extern uint16_t https_timeout;
 
 VoiceVox::VoiceVox() {
 }
@@ -16,7 +17,7 @@ String VoiceVox::synthesis(String text) {
     M5.Log.println("VOICEVOX：開始");
     uint32_t start_time = millis();
 
-    https.setTimeout(30000);
+    https.setTimeout(https_timeout);
     if (!https.begin(url, root_ca_voicevox)) {
         M5.Log.println("VOICEVOX：接続失敗");
         return "";

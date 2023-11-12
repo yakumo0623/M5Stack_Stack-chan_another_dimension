@@ -3,7 +3,7 @@
 #include "rootCA.h"
 
 extern m5avatar::Avatar avatar;
-extern String config_weather_code;
+extern String config_weather;
 extern String today_weather;
 extern String tomorrow_weather;
 
@@ -20,7 +20,7 @@ void Weather::report() {
     uint32_t start_time = millis();
 
     https.setTimeout(30000);
-    if (!https.begin(url + "/" + config_weather_code + ".json", root_ca_jma)) {
+    if (!https.begin(url + "/" + config_weather + ".json", root_ca_jma)) {
         M5.Log.println("Weather：接続失敗");
     }
 

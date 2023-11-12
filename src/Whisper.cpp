@@ -4,6 +4,7 @@
 
 extern m5avatar::Avatar avatar;
 extern String openai_apikey;
+extern uint16_t https_timeout;
 
 // 送信データ
 // form_data
@@ -109,7 +110,7 @@ String Whisper::transcriptions() {
     M5.Log.println("Whisper：開始");
     uint32_t start_time = millis();
 
-    https.setTimeout(30000);
+    https.setTimeout(https_timeout);
     if (!https.begin(url, root_ca_openai)) {
         M5.Log.println("Whisper：接続失敗");
         return "";

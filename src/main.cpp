@@ -23,6 +23,7 @@ String password = "1234";         // WIFIのパスワードダミー
 String openai_apikey = "1234";    // OPENAIのAPIキーダミー
 String voicevox_apikey = "1234";  // VOICEVOXのAPIキーダミー
 uint8_t config_volume = 100;
+uint8_t config_word_count = 20;
 uint8_t config_speaker = 3;
 uint8_t config_color1_red = 0;
 uint8_t config_color1_green = 0;
@@ -37,7 +38,8 @@ String config_tone = "やさしい";
 String config_age = "若者";
 String config_first_person = "わたし";
 String config_second_person = "あなた";
-String config_weather_code = "130000";
+String config_weather = "130000";
+uint16_t https_timeout = 20000;
 
 // ネットワーク接続
 void connect_wifi() {
@@ -98,6 +100,7 @@ void set_nvs_config() {
     esp_err_t openResult = nvs_open("MyConfig", NVS_READWRITE, &nvs);
     if (openResult == ESP_OK) {
         nvs_set_u8(nvs, "volume", config_volume);
+        nvs_set_u8(nvs, "word_count", config_word_count);
         nvs_set_u8(nvs, "speaker", config_speaker);
         nvs_set_str(nvs, "tone", config_tone.c_str());
         nvs_set_str(nvs, "age", config_age.c_str());
@@ -112,10 +115,12 @@ void set_nvs_config() {
         nvs_set_u8(nvs, "color3_red", config_color3_red);
         nvs_set_u8(nvs, "color3_green", config_color3_green);
         nvs_set_u8(nvs, "color3_blue", config_color3_blue);
-        M5.Log.printf("NVS：設定情報の保存成功(%d %d %s %s %s %s %d %d %d %d %d %d %d %d %d)\n", config_volume, config_speaker,
+        nvs_set_str(nvs, "weather", config_weather.c_str());
+        M5.Log.printf("NVS：設定情報の保存成功(%d %d %d %s %s %s %s %d %d %d %d %d %d %d %d %d %s)\n", 
+            config_volume, config_word_count, config_speaker,
             config_tone.c_str(), config_age.c_str(), config_first_person.c_str(), config_second_person.c_str(), 
             config_color1_red, config_color1_green, config_color1_blue, config_color2_red, config_color2_green, config_color2_blue,
-            config_color3_red, config_color3_green, config_color3_blue);
+            config_color3_red, config_color3_green, config_color3_blue, config_weather);
         avatar.setSpeechText("せっていへんこう");
     } else {
         M5.Log.println("NVS：設定情報の保存失敗");
@@ -170,6 +175,7 @@ void get_nvs_config() {
     esp_err_t openResult = nvs_open("MyConfig", NVS_READONLY, &nvs);
     if (openResult == ESP_OK) {
         nvs_get_u8(nvs, "volume", &config_volume);
+        nvs_get_u8(nvs, "word_count", &config_word_count);
         nvs_get_u8(nvs, "speaker", &config_speaker);
         if (nvs_get_str(nvs, "tone", 0, &length) == ESP_OK) {
             nvs_get_str(nvs, "tone", value, &length);
@@ -196,10 +202,15 @@ void get_nvs_config() {
         nvs_get_u8(nvs, "color3_red", &config_color3_red);
         nvs_get_u8(nvs, "color3_green", &config_color3_green);
         nvs_get_u8(nvs, "color3_blue", &config_color3_blue);
-        M5.Log.printf("NVS：設定情報の読み込み成功(%d %d %s %s %s %s %d %d %d %d %d %d %d %d %d)\n", config_volume, config_speaker,
+        if (nvs_get_str(nvs, "weather", 0, &length) == ESP_OK) {
+            nvs_get_str(nvs, "weather", value, &length);
+            config_weather = String(value);
+        }
+        M5.Log.printf("NVS：設定情報の読み込み成功(%d %d %d %s %s %s %s %d %d %d %d %d %d %d %d %d %s)\n", 
+            config_volume, config_word_count, config_speaker,
             config_tone.c_str(), config_age.c_str(), config_first_person.c_str(), config_second_person.c_str(), 
             config_color1_red, config_color1_green, config_color1_blue, config_color2_red, config_color2_green, config_color2_blue,
-            config_color3_red, config_color3_green, config_color3_blue);
+            config_color3_red, config_color3_green, config_color3_blue, config_weather);
     } else {
         M5.Log.println("NVS：設定情報の読み込み失敗");
     }
@@ -373,6 +384,7 @@ void setup() {
     server.on("/config", HTTP_GET, [](AsyncWebServerRequest *request) {request->send(200, "text/html", html_config()); });
     server.on("/update_config", HTTP_ANY, [](AsyncWebServerRequest *request) {
         config_volume = request->arg("volume").toInt();
+        config_word_count = request->arg("word_count").toInt();
         config_speaker = request->arg("speaker").toInt();
         config_tone = request->arg("tone");
         config_age = request->arg("age");
@@ -381,9 +393,11 @@ void setup() {
         hex_to_dec(request->arg("color1"), &config_color1_red, &config_color1_green, &config_color1_blue);
         hex_to_dec(request->arg("color2"), &config_color2_red, &config_color2_green, &config_color2_blue);
         hex_to_dec(request->arg("color3"), &config_color3_red, &config_color3_green, &config_color3_blue);
+        config_weather = request->arg("weather");
         M5.Speaker.setVolume(config_volume);
         set_avatar_color();
         set_nvs_config();
+        execute_weather();
         request->send(200, "text/html", html_update_config());
     });
     server.on("/apikey", HTTP_GET, [](AsyncWebServerRequest *request) {request->send(200, "text/html", html_apikey()); });
