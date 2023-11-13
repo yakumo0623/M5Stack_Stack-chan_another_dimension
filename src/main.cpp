@@ -41,6 +41,23 @@ String config_second_person = "あなた";
 String config_weather = "130000";
 uint16_t https_timeout = 20000;
 
+String today_weather;
+String tomorrow_weather;
+
+constexpr int duration_500 = 5000;      // 500ミリ秒
+constexpr int duration_6000 = 60000;    // 60秒
+constexpr int duration_9000 = 90000;    // 90秒
+constexpr int duration_60000 = 600000;  // 600秒
+
+uint32_t start_time = millis();
+uint32_t talk_time = millis();
+uint32_t sleepy_time = millis();
+uint32_t weather_time = millis();
+
+const String week[] = {"(日)", "(月)", "(火)", "(水)", "(木)", "(金)", "(土)"};
+const String sleepy_text[] = {"すやすや", "むにゃむにゃ", "すーすー", "すぴー", "ふにゃふにゃ"};
+String sleepy_text_selected;
+
 // ネットワーク接続
 void connect_wifi() {
     M5.Log.println("WIFI接続開始");
@@ -350,9 +367,6 @@ void execute_voicevox(String text) {
     delete tts;
 }
 
-String today_weather;
-String tomorrow_weather;
-
 void execute_weather() {
     log_free_size("Weather");
     Weather* weather = new Weather();
@@ -404,6 +418,25 @@ void setup() {
         execute_weather();
         request->send(200, "text/html", html_update_config());
     });
+    server.on("/chatgpt", HTTP_ANY, [](AsyncWebServerRequest *request) {
+        request->send(200, "text/html", html_chatgpt());
+        avatar.setSpeechText("");
+        M5.Display.setBrightness(config_brightness);           
+        talk_time = millis();
+        String return_string = execute_chatgpt(request->arg("text"));             // ChatGPT
+        return_string = String((set_expression(return_string.c_str())).c_str());  // 表情セット
+        execute_voicevox(return_string);                                          // WebVoiceVox
+        avatar.setSpeechText("");
+    });
+    server.on("/voicevox", HTTP_ANY, [](AsyncWebServerRequest *request) {
+        request->send(200, "text/html", html_voicevox());
+        avatar.setSpeechText("");
+        M5.Display.setBrightness(config_brightness);           
+        talk_time = millis();
+        avatar.setExpression(Expression::Neutral);
+        execute_voicevox(request->arg("text"));                                   // WebVoiceVox     
+        avatar.setSpeechText("");
+    });
     server.on("/apikey", HTTP_GET, [](AsyncWebServerRequest *request) {request->send(200, "text/html", html_apikey()); });
     server.on("/update_apikey", HTTP_ANY, [](AsyncWebServerRequest *request) {
         openai_apikey = request->arg("openai_apikey");
@@ -419,18 +452,6 @@ void setup() {
     execute_weather();
     log_free_size("初期化終了");
 }
-
-constexpr int duration_500 = 5000;      // 500ミリ秒
-constexpr int duration_6000 = 60000;    // 60秒
-constexpr int duration_9000 = 90000;    // 90秒
-constexpr int duration_60000 = 600000;  // 600秒
-uint32_t start_time = millis();
-uint32_t talk_time = millis();
-uint32_t sleepy_time = millis();
-uint32_t weather_time = millis();
-String week[] = {"(日)", "(月)", "(火)", "(水)", "(木)", "(金)", "(土)"};
-String sleepy_text[] = {"すやすや", "むにゃむにゃ", "すーすー", "すぴー", "ふにゃふにゃ"};
-String sleepy_text_selected;
 
 void loop() {
     M5.update();

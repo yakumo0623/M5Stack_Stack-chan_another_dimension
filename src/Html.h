@@ -93,7 +93,7 @@ const String html_config_string_1 = R"(
           <input type="range" id="wordCountSlider" name="word_count" min="10" max="100" step="10">
           <output for="wordCountSlider" id="selectedWordCount"></output>
         </div>
-        声：<select id="speaker" name="speaker"></select><br>
+        声(VOICEVOX)：<select id="speaker" name="speaker"></select><br>
         口調：<select id="tone" name="tone"></select><br>
         年代：<select id="age" name="age"></select><br>
         一人称：<select id="first_person" name="first_person"></select><br>
@@ -347,6 +347,32 @@ String html_update_apikey() {
         <title>スタックチャンの設定をおこないました</title>
       </head>
       <body>スタックチャンの設定をおこないました</body>
+    </html>)";
+}
+
+String html_chatgpt() {
+  return R"(
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ChatGPTにテキストを送ります</title>
+      </head>
+      <body>ChatGPTにテキストを送ります</body>
+    </html>)";
+}
+
+String html_voicevox() {
+  return R"(
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>VOICEVOXにテキストを送ります</title>
+      </head>
+      <body>VOICEVOXにテキストを送ります</body>
     </html>)";
 }
 
