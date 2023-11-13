@@ -17,12 +17,12 @@ Avatar avatar;
 AsyncWebServer server(80);
 
 // 初期値
-uint8_t display_brightness = 120;
 String ssid = "1234";             // WIFIのSSIDダミー
 String password = "1234";         // WIFIのパスワードダミー
 String openai_apikey = "1234";    // OPENAIのAPIキーダミー
 String voicevox_apikey = "1234";  // VOICEVOXのAPIキーダミー
 uint8_t config_volume = 100;
+uint8_t config_brightness = 120;
 uint8_t config_word_count = 20;
 uint8_t config_speaker = 3;
 uint8_t config_color1_red = 0;
@@ -100,6 +100,7 @@ void set_nvs_config() {
     esp_err_t openResult = nvs_open("MyConfig", NVS_READWRITE, &nvs);
     if (openResult == ESP_OK) {
         nvs_set_u8(nvs, "volume", config_volume);
+        nvs_set_u8(nvs, "brightness", config_brightness);
         nvs_set_u8(nvs, "word_count", config_word_count);
         nvs_set_u8(nvs, "speaker", config_speaker);
         nvs_set_str(nvs, "tone", config_tone.c_str());
@@ -116,8 +117,8 @@ void set_nvs_config() {
         nvs_set_u8(nvs, "color3_green", config_color3_green);
         nvs_set_u8(nvs, "color3_blue", config_color3_blue);
         nvs_set_str(nvs, "weather", config_weather.c_str());
-        M5.Log.printf("NVS：設定情報の保存成功(%d %d %d %s %s %s %s %d %d %d %d %d %d %d %d %d %s)\n", 
-            config_volume, config_word_count, config_speaker,
+        M5.Log.printf("NVS：設定情報の保存成功(%d %d %d %d %s %s %s %s %d %d %d %d %d %d %d %d %d %s)\n", 
+            config_volume, config_brightness, config_word_count, config_speaker,
             config_tone.c_str(), config_age.c_str(), config_first_person.c_str(), config_second_person.c_str(), 
             config_color1_red, config_color1_green, config_color1_blue, config_color2_red, config_color2_green, config_color2_blue,
             config_color3_red, config_color3_green, config_color3_blue, config_weather);
@@ -175,6 +176,7 @@ void get_nvs_config() {
     esp_err_t openResult = nvs_open("MyConfig", NVS_READONLY, &nvs);
     if (openResult == ESP_OK) {
         nvs_get_u8(nvs, "volume", &config_volume);
+        nvs_get_u8(nvs, "brightness", &config_brightness);
         nvs_get_u8(nvs, "word_count", &config_word_count);
         nvs_get_u8(nvs, "speaker", &config_speaker);
         if (nvs_get_str(nvs, "tone", 0, &length) == ESP_OK) {
@@ -206,8 +208,8 @@ void get_nvs_config() {
             nvs_get_str(nvs, "weather", value, &length);
             config_weather = String(value);
         }
-        M5.Log.printf("NVS：設定情報の読み込み成功(%d %d %d %s %s %s %s %d %d %d %d %d %d %d %d %d %s)\n", 
-            config_volume, config_word_count, config_speaker,
+        M5.Log.printf("NVS：設定情報の読み込み成功(%d %d %d %d %s %s %s %s %d %d %d %d %d %d %d %d %d %s)\n", 
+            config_volume, config_brightness, config_word_count, config_speaker,
             config_tone.c_str(), config_age.c_str(), config_first_person.c_str(), config_second_person.c_str(), 
             config_color1_red, config_color1_green, config_color1_blue, config_color2_red, config_color2_green, config_color2_blue,
             config_color3_red, config_color3_green, config_color3_blue, config_weather);
@@ -370,7 +372,7 @@ void setup() {
     M5.Speaker.config(spk_cfg);
     M5.Speaker.setVolume(config_volume);
 
-    M5.Display.setBrightness(display_brightness);
+    M5.Display.setBrightness(config_brightness);
 
     avatar.setBatteryIcon(true);
     avatar.setSpeechFont(&fonts::efontJA_16_b);
@@ -384,6 +386,7 @@ void setup() {
     server.on("/config", HTTP_GET, [](AsyncWebServerRequest *request) {request->send(200, "text/html", html_config()); });
     server.on("/update_config", HTTP_ANY, [](AsyncWebServerRequest *request) {
         config_volume = request->arg("volume").toInt();
+        config_brightness = request->arg("brightness").toInt();
         config_word_count = request->arg("word_count").toInt();
         config_speaker = request->arg("speaker").toInt();
         config_tone = request->arg("tone");
@@ -396,6 +399,7 @@ void setup() {
         config_weather = request->arg("weather");
         M5.Speaker.setVolume(config_volume);
         set_avatar_color();
+        M5.Display.setBrightness(config_brightness);
         set_nvs_config();
         execute_weather();
         request->send(200, "text/html", html_update_config());
@@ -437,7 +441,7 @@ void loop() {
         if (t.wasPressed()) {
             avatar.setExpression(Expression::Happy);
             avatar.setSpeechText("");
-            M5.Display.setBrightness(display_brightness);           
+            M5.Display.setBrightness(config_brightness);           
             talk_time = millis();
             if (t.y <= 30 && t.x >= M5.Display.width() - 30) {
                 // IPアドレスを表示                
@@ -486,7 +490,7 @@ void loop() {
     }
     // 居眠りモード
     if (avatar.getExpression() != Expression::Sleepy && millis() - talk_time >= duration_9000) {
-        M5.Display.setBrightness(int(display_brightness * 0.4));
+        M5.Display.setBrightness(int(config_brightness * 0.4));
         avatar.setExpression(Expression::Sleepy);
         sleepy_text_selected = sleepy_text[random(0, sizeof(sleepy_text) / sizeof(sleepy_text[0]))];
         avatar.setSpeechText(sleepy_text_selected.c_str());

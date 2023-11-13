@@ -4,6 +4,7 @@
 #include<M5Unified.h>
 
 extern uint8_t config_volume;
+extern uint8_t config_brightness;
 extern uint8_t config_word_count;
 extern uint8_t config_speaker;
 extern uint8_t config_color1_red;
@@ -79,8 +80,13 @@ const String html_config_string_1 = R"(
       <form id="settingsForm">
         <div>
           <label for="volumeSlider">音量：</label>
-          <input type="range" id="volumeSlider" name="volume" min="0" max="255">
+          <input type="range" id="volumeSlider" name="volume" min="0" max="255" step="5">
           <output for="volumeSlider" id="selectedVolume"></output>
+        </div>
+        <div>
+          <label for="brightnessSlider">明るさ：</label>
+          <input type="range" id="brightnessSlider" name="brightness" min="10" max="255" step="5">
+          <output for="brightnessSlider" id="selectedBrightness"></output>
         </div>
         <div>
           <label for="wordCountSlider">応答文字数：</label>
@@ -112,6 +118,8 @@ const String html_config_string_1 = R"(
     <script>
       const volumeSlider = document.getElementById("volumeSlider");
       const selectedVolume = document.getElementById("selectedVolume");
+      const brightnessSlider = document.getElementById("brightnessSlider");
+      const selectedBrightness = document.getElementById("selectedBrightness");
       const wordCountSlider = document.getElementById("wordCountSlider");
       const selectedWordCount = document.getElementById("selectedWordCount");
       const color1 = document.getElementById("color1");
@@ -133,6 +141,10 @@ const String html_config_string_1 = R"(
 
       volumeSlider.addEventListener("input", function() {
         selectedVolume.textContent = volumeSlider.value;
+      });
+
+      brightnessSlider.addEventListener("input", function() {
+        selectedBrightness.textContent = brightnessSlider.value;
       });
 
       wordCountSlider.addEventListener("input", function() {
@@ -183,6 +195,8 @@ String html_config() {
         window.onload = function() {
           volumeSlider.value = )" + String(config_volume) + R"(;
           selectedVolume.textContent = )" + String(config_volume) + R"(;
+          brightnessSlider.value = )" + String(config_brightness) + R"(;
+          selectedBrightness.textContent = )" + String(config_brightness) + R"(;
           wordCountSlider.value = )" + String(config_word_count) + R"(;
           selectedWordCount.textContent = )" + String(config_word_count) + R"(;
           container.style.backgroundColor = ")" + color1 + R"(";
