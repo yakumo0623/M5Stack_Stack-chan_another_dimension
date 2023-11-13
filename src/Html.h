@@ -357,9 +357,9 @@ String html_chatgpt() {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ChatGPTにテキストを送ります</title>
+        <title>ChatGPTにテキストを送りました</title>
       </head>
-      <body>ChatGPTにテキストを送ります</body>
+      <body>ChatGPTにテキストを送りました</body>
     </html>)";
 }
 
@@ -370,9 +370,9 @@ String html_voicevox() {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>VOICEVOXにテキストを送ります</title>
+        <title>VOICEVOXにテキストを送りました</title>
       </head>
-      <body>VOICEVOXにテキストを送ります</body>
+      <body>VOICEVOXにテキストを送りました</body>
     </html>)";
 }
 
