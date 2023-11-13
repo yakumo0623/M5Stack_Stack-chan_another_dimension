@@ -58,6 +58,11 @@ const String week[] = {"(日)", "(月)", "(火)", "(水)", "(木)", "(金)", "(�
 const String sleepy_text[] = {"すやすや", "むにゃむにゃ", "すーすー", "すぴー", "ふにゃふにゃ"};
 String sleepy_text_selected;
 
+bool http_chatgpt_flag = false;
+String http_chatgpt_text;
+bool http_voicevox_flag = false;
+String http_voicevox_text;
+
 // ネットワーク接続
 void connect_wifi() {
     M5.Log.println("WIFI接続開始");
@@ -419,23 +424,14 @@ void setup() {
         request->send(200, "text/html", html_update_config());
     });
     server.on("/chatgpt", HTTP_ANY, [](AsyncWebServerRequest *request) {
+        http_chatgpt_flag = true;
+        http_chatgpt_text = request->arg("text");
         request->send(200, "text/html", html_chatgpt());
-        avatar.setSpeechText("");
-        M5.Display.setBrightness(config_brightness);           
-        talk_time = millis();
-        String return_string = execute_chatgpt(request->arg("text"));             // ChatGPT
-        return_string = String((set_expression(return_string.c_str())).c_str());  // 表情セット
-        execute_voicevox(return_string);                                          // WebVoiceVox
-        avatar.setSpeechText("");
     });
     server.on("/voicevox", HTTP_ANY, [](AsyncWebServerRequest *request) {
+        http_voicevox_flag = true;
+        http_voicevox_text = request->arg("text");
         request->send(200, "text/html", html_voicevox());
-        avatar.setSpeechText("");
-        M5.Display.setBrightness(config_brightness);           
-        talk_time = millis();
-        avatar.setExpression(Expression::Neutral);
-        execute_voicevox(request->arg("text"));                                   // WebVoiceVox     
-        avatar.setSpeechText("");
     });
     server.on("/apikey", HTTP_GET, [](AsyncWebServerRequest *request) {request->send(200, "text/html", html_apikey()); });
     server.on("/update_apikey", HTTP_ANY, [](AsyncWebServerRequest *request) {
@@ -502,6 +498,32 @@ void loop() {
                 avatar.setSpeechText("");
             }
         }
+    }
+
+    // 直接ChatGPTを呼ぶ
+    if (http_chatgpt_flag == true) {
+        http_chatgpt_flag = false;
+        avatar.setExpression(Expression::Neutral);
+        avatar.setSpeechText("");
+        M5.Display.setBrightness(config_brightness);           
+        talk_time = millis();
+        String return_string = execute_chatgpt(http_chatgpt_text);                // ChatGPT
+        return_string = String((set_expression(return_string.c_str())).c_str());  // 表情セット
+        execute_voicevox(return_string);                                          // WebVoiceVox
+        avatar.setSpeechText("");
+        http_chatgpt_text = "";
+    }
+
+    // 直接VOICEVOXを呼ぶ
+    if (http_voicevox_flag == true) {
+        http_voicevox_flag = false;
+        avatar.setExpression(Expression::Neutral);
+        avatar.setSpeechText("");
+        M5.Display.setBrightness(config_brightness);           
+        talk_time = millis();
+        execute_voicevox(http_voicevox_text);
+        avatar.setSpeechText("");
+        http_voicevox_text = "";
     }
 
     // バッテリー状態を更新
