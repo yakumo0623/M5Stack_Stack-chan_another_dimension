@@ -44,24 +44,30 @@ uint16_t https_timeout = 20000;
 String today_weather;
 String tomorrow_weather;
 
-constexpr int duration_500 = 5000;      // 500ミリ秒
-constexpr int duration_6000 = 60000;    // 60秒
-constexpr int duration_9000 = 90000;    // 90秒
-constexpr int duration_60000 = 600000;  // 600秒
+constexpr int duration_500 = 500;        // 500ミリ秒
+constexpr int duration_1000 = 1000;      // 1秒
+constexpr int duration_60000 = 60000;    // 60秒
+constexpr int duration_90000 = 90000;    // 90秒
+constexpr int duration_600000 = 600000;  // 600秒
 
-uint32_t start_time = millis();
-uint32_t talk_time = millis();
-uint32_t sleepy_time = millis();
+uint32_t battery_time = millis();
+uint32_t action_time = millis();
 uint32_t weather_time = millis();
 
 const String week[] = {"(日)", "(月)", "(火)", "(水)", "(木)", "(金)", "(土)"};
 const String sleepy_text[] = {"すやすや", "むにゃむにゃ", "すーすー", "すぴー", "ふにゃふにゃ"};
+const String surprised_text[] = {"あわわ", "どきっ", "びくっ"};
 String sleepy_text_selected;
+String surprised_text_selected;
+constexpr const float sleepy_threshold = 0.4;
+constexpr const float surprised_threshold = 3.0;
 
 bool http_chatgpt_flag = false;
 String http_chatgpt_text;
 bool http_voicevox_flag = false;
 String http_voicevox_text;
+
+float ax, ay, az;
 
 // ネットワーク接続
 void connect_wifi() {
@@ -459,7 +465,7 @@ void loop() {
             avatar.setExpression(Expression::Happy);
             avatar.setSpeechText("");
             M5.Display.setBrightness(config_brightness);           
-            talk_time = millis();
+            action_time = millis();
             if (t.y <= 30 && t.x >= M5.Display.width() - 30) {
                 // IPアドレスを表示                
                 String local_ip =  WiFi.localIP().toString();
@@ -506,7 +512,7 @@ void loop() {
         avatar.setExpression(Expression::Neutral);
         avatar.setSpeechText("");
         M5.Display.setBrightness(config_brightness);           
-        talk_time = millis();
+        action_time = millis();
         String return_string = execute_chatgpt(http_chatgpt_text);                // ChatGPT
         return_string = String((set_expression(return_string.c_str())).c_str());  // 表情セット
         execute_voicevox(return_string);                                          // WebVoiceVox
@@ -520,26 +526,37 @@ void loop() {
         avatar.setExpression(Expression::Neutral);
         avatar.setSpeechText("");
         M5.Display.setBrightness(config_brightness);           
-        talk_time = millis();
+        action_time = millis();
         execute_voicevox(http_voicevox_text);
         avatar.setSpeechText("");
         http_voicevox_text = "";
     }
 
     // バッテリー状態を更新
-    if (millis() - start_time >= duration_6000) {
+    if (millis() - battery_time >= duration_60000) {
         avatar.setBatteryStatus(M5.Power.isCharging(), M5.Power.getBatteryLevel());
-        start_time = millis();
+        battery_time = millis();
     }
     // 居眠りモード
-    if (avatar.getExpression() != Expression::Sleepy && millis() - talk_time >= duration_9000) {
-        M5.Display.setBrightness(int(config_brightness * 0.4));
+    if (avatar.getExpression() != Expression::Sleepy && millis() - action_time >= duration_90000) {
+        M5.Display.setBrightness(int(config_brightness * sleepy_threshold));
         avatar.setExpression(Expression::Sleepy);
         sleepy_text_selected = sleepy_text[random(0, sizeof(sleepy_text) / sizeof(sleepy_text[0]))];
         avatar.setSpeechText(sleepy_text_selected.c_str());
     }
+
+    // シェイク時の驚き
+    M5.Imu.getAccel(&ax, &ay, &az);
+    if (abs(ax) + abs(ay) + abs(az) > surprised_threshold && millis() - action_time >= duration_1000) {
+        M5.Display.setBrightness(int(config_brightness));
+        avatar.setExpression(Expression::Doubt);
+        surprised_text_selected = surprised_text[random(0, sizeof(surprised_text) / sizeof(surprised_text[0]))];
+        avatar.setSpeechText(surprised_text_selected.c_str());
+        action_time = millis();
+    }
+
     // 天気予報を更新
-    if (millis() - weather_time >= duration_60000) {
+    if (millis() - weather_time >= duration_600000) {
         execute_weather();
         weather_time = millis();
     }
