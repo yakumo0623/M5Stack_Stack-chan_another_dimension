@@ -17,32 +17,32 @@ Avatar avatar;
 AsyncWebServer server(80);
 
 // 初期値
-String ssid = "1234";             // WIFIのSSIDダミー
-String password = "1234";         // WIFIのパスワードダミー
-String openai_apikey = "1234";    // OPENAIのAPIキーダミー
-String voicevox_apikey = "1234";  // VOICEVOXのAPIキーダミー
-uint8_t config_volume = 100;
-uint8_t config_brightness = 120;
-uint8_t config_word_count = 20;
-uint8_t config_speaker = 3;
-uint8_t config_color1_red = 0;
-uint8_t config_color1_green = 0;
-uint8_t config_color1_blue = 0;
-uint8_t config_color2_red = 255;
-uint8_t config_color2_green = 255;
-uint8_t config_color2_blue = 255;
-uint8_t config_color3_red = 248;
-uint8_t config_color3_green = 171;
-uint8_t config_color3_blue = 166;
-String config_tone = "やさしい";
-String config_age = "若者";
-String config_first_person = "わたし";
-String config_second_person = "あなた";
-String config_weather = "130000";
-uint16_t https_timeout = 20000;
+String ssid = "1234";                    // WIFIのSSID：ダミー値
+String password = "1234";                // WIFIのパスワード：ダミー値
+String openai_apikey = "1234";           // OPENAIのAPIキー：ダミー値
+String voicevox_apikey = "1234";         // VOICEVOXのAPIキー：ダミー値
+uint8_t config_volume = 100;             // 音量
+uint8_t config_brightness = 120;         // 明るさ
+uint8_t config_word_count = 20;          // 応答文字数
+uint8_t config_speaker = 3;              // 声：ずんだもん
+uint8_t config_color1_red = 0;           // 背景の色
+uint8_t config_color1_green = 0;         // 背景の色
+uint8_t config_color1_blue = 0;          // 背景の色
+uint8_t config_color2_red = 255;         // 目口の色
+uint8_t config_color2_green = 255;       // 目口の色
+uint8_t config_color2_blue = 255;        // 目口の色
+uint8_t config_color3_red = 248;         // ほっぺの色
+uint8_t config_color3_green = 171;       // ほっぺの色
+uint8_t config_color3_blue = 166;        // ほっぺの色
+String config_tone = "やさしい";         // 口調
+String config_age = "若者";              // 年代
+String config_first_person = "わたし";   // 一人称
+String config_second_person = "あなた";  // 二人称
+String config_weather = "130000";        // 天気：東京
+uint16_t https_timeout = 20000;          // HTTPタイムアウト時間
 
-String today_weather;
-String tomorrow_weather;
+String today_weather;     // 今日の天気
+String tomorrow_weather;  // 明日の天気
 
 constexpr int duration_500 = 500;              // 500ミリ秒
 constexpr int duration_1000 = 1 * 1000;        // 1秒
@@ -51,24 +51,24 @@ constexpr int duration_90000 = 90 * 1000;      // 90秒
 constexpr int duration_600000 = 600 * 1000;    // 10分
 constexpr int duration_1800000 = 1800 * 1000;  // 30分
 
-uint32_t battery_time = millis();
-uint32_t action_time = millis();
-uint32_t weather_time = millis();
+uint32_t battery_time = millis();  // 前回チェック：バッテリー
+uint32_t action_time = millis();   // 前回チェック：操作
+uint32_t weather_time = millis();  // 前回チェック：天気予報
 
-const String week[] = {"(日)", "(月)", "(火)", "(水)", "(木)", "(金)", "(土)"};
-const String sleepy_text[] = {"すやすや", "むにゃむにゃ", "すーすー", "すぴー", "ふにゃふにゃ"};
-const String surprised_text[] = {"あわわ", "どきっ", "びくっ"};
-String sleepy_text_selected;
-String surprised_text_selected;
-constexpr const float sleepy_threshold = 0.4;
-constexpr const float surprised_threshold = 3.0;
+const String week[] = {"(日)", "(月)", "(火)", "(水)", "(木)", "(金)", "(土)"};                   // 曜日
+const String sleepy_text[] = {"すやすや", "むにゃむにゃ", "すーすー", "すぴー", "ふにゃふにゃ"};  // 居眠り
+const String surprised_text[] = {"あわわ", "どきっ", "びくっ"};                                   // 驚き
+String sleepy_text_selected;     // 選択テキスト：居眠り
+String surprised_text_selected;  // 選択テキスト：驚き
+constexpr const float sleepy_threshold = 0.4;     // 閾値：居眠：明るさ
+constexpr const float surprised_threshold = 3.0;  // 閾値：驚き
 
-bool http_chatgpt_flag = false;
-String http_chatgpt_text;
-bool http_voicevox_flag = false;
-String http_voicevox_text;
+bool http_chatgpt_flag = false;   // ChatGPT直接実行：フラグ
+String http_chatgpt_text;         // ChatGPT直接実行：テキスト
+bool http_voicevox_flag = false;  // VOICEVOX直接実行：フラグ
+String http_voicevox_text;        // VOICEVOX直接実行：テキスト
 
-float ax, ay, az;
+float ax, ay, az;  // 加速度
 
 // ネットワーク接続
 void connect_wifi() {
@@ -156,7 +156,7 @@ void set_nvs_config() {
         M5.Log.println("NVS：設定情報の保存失敗");
     }
     nvs_close(nvs);
-    delay(1000);
+    delay(500);
     avatar.setSpeechText("");
 }
 
@@ -174,7 +174,7 @@ void set_nvs_apikey() {
         M5.Log.println("NVS：APIKEYの保存失敗");
     }
     nvs_close(nvs);
-    delay(1000);
+    delay(500);
     avatar.setSpeechText("");
 }
 
@@ -192,7 +192,7 @@ void set_nvs_wifi() {
         M5.Log.println("NVS：WIFIの保存失敗");
     }
     nvs_close(nvs);
-    delay(1000);
+    delay(500);
     avatar.setSpeechText("");
 }
 
@@ -250,11 +250,11 @@ void get_nvs_config() {
 
 // 読み込み時にAPIKEYを全て表示しないためのマスキング
 String mask(String value) {
-    if (value.length() < 4) { return ""; }
+    if (value.length() < 4) { return value; }
     String prefix = value.substring(0, 2);
     String suffix = value.substring(value.length() - 2);
     String asterisk = "";
-    for (int i=0; i<(value.length() - 4); i++) { asterisk += "*"; }
+    for (int i = 0; i < (value.length() - 4); i++) { asterisk += "*"; }
     return prefix + asterisk + suffix;
 }
 
@@ -322,8 +322,8 @@ void log_free_size(const char* text) {
 // SDカードがある場合、wifi.txtの設定を読み込む
 void get_sdcard_wifi() {
     if (SD.begin(GPIO_NUM_4, SPI, 25000000)) {
-        ssid = "";
-        password = "";
+        ssid = "";      // SDカードの内容を入れるためにクリア
+        password = "";  // SDカードの内容を入れるためにクリア
         auto fs = SD.open("/wifi.txt", FILE_READ);
         if(fs) {
             while (fs.available()) {
@@ -472,7 +472,6 @@ void loop() {
                 String local_ip =  WiFi.localIP().toString();
                 avatar.setSpeechText(local_ip.c_str());
                 delay(3000);
-                avatar.setSpeechText("");
             } else if (t.y <= M5.Display.height() / 2) {
                 // 会話
                 avatar.setExpression(Expression::Neutral);           
@@ -480,7 +479,6 @@ void loop() {
                 return_string = execute_chatgpt(return_string);                           // ChatGPT
                 return_string = String((set_expression(return_string.c_str())).c_str());  // 表情セット
                 execute_voicevox(return_string);                                          // WebVoiceVox
-                avatar.setSpeechText("");
             } else if (t.y > M5.Display.height() / 2 && t.x <= M5.Display.width() / 2) {
                 // 現在日時を表示
                 struct tm timeinfo;
@@ -491,7 +489,6 @@ void loop() {
                 datetime += " " + String(formatted_time);
                 avatar.setSpeechText(datetime.c_str());
                 delay(3000);
-                avatar.setSpeechText("");
             } else {
                 // 天気を表示
                 avatar.setSpeechText("今日の天気");
@@ -502,8 +499,8 @@ void loop() {
                 delay(1000);
                 avatar.setSpeechText(tomorrow_weather.c_str());
                 delay(3000);
-                avatar.setSpeechText("");
             }
+            avatar.setSpeechText("");
         }
     }
 
@@ -518,7 +515,6 @@ void loop() {
         return_string = String((set_expression(return_string.c_str())).c_str());  // 表情セット
         execute_voicevox(return_string);                                          // WebVoiceVox
         avatar.setSpeechText("");
-        http_chatgpt_text = "";
     }
 
     // 直接VOICEVOXを呼ぶ
@@ -530,7 +526,6 @@ void loop() {
         action_time = millis();
         execute_voicevox(http_voicevox_text);
         avatar.setSpeechText("");
-        http_voicevox_text = "";
     }
 
     // バッテリー状態を更新
