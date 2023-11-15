@@ -44,11 +44,12 @@ uint16_t https_timeout = 20000;
 String today_weather;
 String tomorrow_weather;
 
-constexpr int duration_500 = 500;        // 500ミリ秒
-constexpr int duration_1000 = 1000;      // 1秒
-constexpr int duration_60000 = 60000;    // 60秒
-constexpr int duration_90000 = 90000;    // 90秒
-constexpr int duration_600000 = 600000;  // 600秒
+constexpr int duration_500 = 500;              // 500ミリ秒
+constexpr int duration_1000 = 1 * 1000;        // 1秒
+constexpr int duration_60000 = 60 * 1000;      // 60秒
+constexpr int duration_90000 = 90 * 1000;      // 90秒
+constexpr int duration_600000 = 600 * 1000;    // 10分
+constexpr int duration_1800000 = 1800 * 1000;  // 30分
 
 uint32_t battery_time = millis();
 uint32_t action_time = millis();
@@ -556,7 +557,7 @@ void loop() {
     }
 
     // 天気予報を更新
-    if (millis() - weather_time >= duration_600000) {
+    if (millis() - weather_time >= duration_1800000) {
         execute_weather();
         weather_time = millis();
     }
