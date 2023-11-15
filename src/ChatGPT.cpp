@@ -87,7 +87,7 @@ String ChatGPT::completions(String text) {
         return "";
     }
 
-    const String model = doc["model"];
+    const String r_model = doc["model"];
     const String content = doc["choices"][0]["message"]["content"];
     const String prompt_tokens = doc["usage"]["prompt_tokens"];
     const String completion_tokens = doc["usage"]["completion_tokens"];
@@ -95,7 +95,7 @@ String ChatGPT::completions(String text) {
     chat_history.push_back(content_2);
 
     M5.Log.printf("ChatGPT：%s(%.1f秒)\n",content_2.c_str(), (millis() - start_time) / 1000.0); 
-    M5.Log.printf("ChatGPT：(モデル：%s 入力トークン数：%s 出力トークン数：%s)\n", model.c_str(), prompt_tokens.c_str(), completion_tokens.c_str());
+    M5.Log.printf("ChatGPT：(モデル：%s 入力トークン数：%s 出力トークン数：%s)\n", r_model.c_str(), prompt_tokens.c_str(), completion_tokens.c_str());
     M5.Log.println("ChatGPT：終了"); 
     return content_2;
 }
