@@ -7,10 +7,53 @@ extern String voicevox_apikey;
 extern uint8_t config_speaker;
 extern uint16_t https_timeout;
 
+TaskHandle_t voicevox_task_handle;
+
+void voicevox_task_loop(void *args) {
+    VoiceVox *ptr = static_cast<VoiceVox*>(args);
+    int level = 0;
+
+    for (;;) {
+        if (ptr->mp3->isRunning()) {
+            level = abs(*(ptr->out->getBuffer()));
+            if(level<100) level = 0;
+            if(level > 15000)
+            {
+            level = 15000;
+            }
+            avatar.setMouthOpenRatio((float)level/15000.0);
+
+            if (!ptr->mp3->loop()) { break; }
+             vTaskDelay(1);
+        }
+    }
+    avatar.setMouthOpenRatio(0);
+    ptr->mp3->stop();
+    delete ptr->buff;
+    delete ptr->file;
+    M5.Speaker.end();
+    M5.Mic.begin();
+    M5.Log.println("発話：終了");
+    ptr->isEnd = true;
+    vTaskDelete(NULL);
+}
+
 VoiceVox::VoiceVox() {
+    mp3 = new AudioGeneratorMP3();
+    out = new AudioOutputM5Speaker(&M5.Speaker);
+
+    xTaskCreateUniversal(voicevox_task_loop,
+        "voicevox_task_loop",
+        2048,
+        this,
+        1,
+        &voicevox_task_handle,
+        APP_CPU_NUM);
 }
 
 VoiceVox::~VoiceVox() {
+    delete mp3;
+    delete out;
 }
 
 String VoiceVox::synthesis(String text) {
@@ -54,40 +97,11 @@ String VoiceVox::synthesis(String text) {
 
 void VoiceVox::talk(String url) {
      M5.Log.println("発話：開始");
-    uint32_t start_time = millis();
-    mp3 = new AudioGeneratorMP3();
+
     file = new AudioFileSourceHTTPSStream(url.c_str(), root_ca_voicevox);
     buff = new AudioFileSourceBuffer(file, 1024 * 10);
-    out = new AudioOutputM5Speaker(&M5.Speaker);
 
     M5.Mic.end();
     M5.Speaker.begin();
     mp3->begin(buff, out);
-
-    int level = 0;
-    for (;;) {
-        if (mp3->isRunning()) {
-            level = abs(*out->getBuffer());
-            if(level<100) level = 0;
-            if(level > 15000)
-            {
-            level = 15000;
-            }
-            avatar.setMouthOpenRatio((float)level/15000.0);
-
-            if (!mp3->loop()) {
-                avatar.setMouthOpenRatio(0);
-                mp3->stop();
-                M5.Log.printf("発話：終了(%.1f秒)\n", (millis() - start_time) / 1000.0);
-                delete out;
-                delete buff;
-                delete file;
-                delete mp3;
-                break;
-            }
-            delay(1);
-        }
-    }
-    M5.Speaker.end();
-    M5.Mic.begin();
 }
