@@ -544,6 +544,7 @@ void loop() {
         avatar.setBatteryStatus(M5.Power.isCharging(), M5.Power.getBatteryLevel());
         battery_time = millis();
     }
+
     // 居眠りモード
     if (avatar.getExpression() != Expression::Sleepy && millis() - action_time >= duration_90000) {
         M5.Display.setBrightness(int(config_brightness * sleepy_threshold));
