@@ -3,6 +3,7 @@
 
 #include<M5Unified.h>
 
+extern String config_machine_name;
 extern uint8_t config_volume;
 extern uint8_t config_brightness;
 extern uint8_t config_word_count;
@@ -78,6 +79,7 @@ const String html_config_string_1 = R"(
     </head>
     <body>
       <form id="settingsForm">
+        マシン名：<input type="text" id="machine_name" name="machine_name" minlength="4"></select><br>
         <div>
           <label for="volumeSlider">音量：</label>
           <input type="range" id="volumeSlider" name="volume" min="0" max="255" step="5">
@@ -116,6 +118,7 @@ const String html_config_string_1 = R"(
       </form>
     </body>
     <script>
+      const machine_name = document.getElementById("machine_name");
       const volumeSlider = document.getElementById("volumeSlider");
       const selectedVolume = document.getElementById("selectedVolume");
       const brightnessSlider = document.getElementById("brightnessSlider");
@@ -193,6 +196,7 @@ String html_config() {
   String color3 = rgb_to_string(config_color3_red, config_color3_green, config_color3_blue);
   String html_config_string_2 = R"(
         window.onload = function() {
+          machine_name.value = ")" + String(config_machine_name) + R"(";
           volumeSlider.value = )" + String(config_volume) + R"(;
           selectedVolume.textContent = )" + String(config_volume) + R"(;
           brightnessSlider.value = )" + String(config_brightness) + R"(;
