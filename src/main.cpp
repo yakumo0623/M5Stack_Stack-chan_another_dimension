@@ -14,7 +14,6 @@
 
 using namespace m5avatar;
 Avatar avatar;
-VoiceVox* tts;
 
 AsyncWebServer server(80);
 
@@ -125,7 +124,7 @@ void set_avatar_color() {
     avatar.setColorPalette(cp);
 }
 
-// 設定情報の保存(キーは15文字以下であること)
+// 設定情報の保存
 void set_nvs_config() {
     nvs_handle_t nvs;
     M5.Log.println("NVS：設定情報の保存開始");
@@ -246,7 +245,7 @@ void get_nvs_config() {
             config_weather = String(value);
         }
         M5.Log.printf("NVS：設定情報の読み込み成功(%s %d %d %d %d %s %s %s %s %d %d %d %d %d %d %d %d %d %s)\n", 
-            config_machine_name, config_volume, config_brightness, config_word_count, config_speaker,
+            config_machine_name.c_str(), config_volume, config_brightness, config_word_count, config_speaker,
             config_tone.c_str(), config_age.c_str(), config_first_person.c_str(), config_second_person.c_str(), 
             config_color1_red, config_color1_green, config_color1_blue, config_color2_red, config_color2_green, config_color2_blue,
             config_color3_red, config_color3_green, config_color3_blue, config_weather);
@@ -378,14 +377,13 @@ void execute_voicevox(String text) {
     if (text == "") { return; }
     log_free_size("VOICEVOX");
     avatar.setSpeechText("すぅー …");
-    //VoiceVox* tts = new VoiceVox();
-    tts = new VoiceVox();
+    VoiceVox* tts = new VoiceVox();
     String return_string = tts->synthesis(text);
     if (return_string != "") {
         avatar.setSpeechText("おはなしちゅう …");
         tts->talk(return_string);
     }
-    //delete tts;
+    delete tts;
 }
 
 void execute_weather() {
@@ -483,8 +481,6 @@ void loop() {
             if (t.y <= 30 && t.x >= M5.Display.width() - 30) {
                 // IPアドレスを表示                
                 String local_ip =  WiFi.localIP().toString();
-                avatar.setSpeechText(config_machine_name.c_str());
-                delay(1000);
                 avatar.setSpeechText(local_ip.c_str());
                 delay(3000);
             } else if (t.y <= M5.Display.height() / 2) {
@@ -541,12 +537,6 @@ void loop() {
         action_time = millis();
         execute_voicevox(http_voicevox_text);
         avatar.setSpeechText("");
-    }
-
-    // 発話が終わったらVOICEVOXクラスを破棄
-    if (tts != nullptr && tts->isEnd) {
-        delete tts;
-        tts = nullptr;
     }
 
     // バッテリー状態を更新

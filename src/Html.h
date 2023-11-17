@@ -79,7 +79,7 @@ const String html_config_string_1 = R"(
     </head>
     <body>
       <form id="settingsForm">
-        マシン名：<input type="text" id="machine_name" name="machine_name" minlength="4"></select><br>
+        マシン名：<input id="machine_name" name="machine_name"></input><br>
         <div>
           <label for="volumeSlider">音量：</label>
           <input type="range" id="volumeSlider" name="volume" min="0" max="255" step="5">
