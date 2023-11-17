@@ -14,6 +14,7 @@
 
 using namespace m5avatar;
 Avatar avatar;
+VoiceVox* tts;
 
 AsyncWebServer server(80);
 
@@ -377,13 +378,14 @@ void execute_voicevox(String text) {
     if (text == "") { return; }
     log_free_size("VOICEVOX");
     avatar.setSpeechText("すぅー …");
-    VoiceVox* tts = new VoiceVox();
+    //VoiceVox* tts = new VoiceVox();
+    tts = new VoiceVox();
     String return_string = tts->synthesis(text);
     if (return_string != "") {
         avatar.setSpeechText("おはなしちゅう …");
         tts->talk(return_string);
     }
-    delete tts;
+    //delete tts;
 }
 
 void execute_weather() {
@@ -539,6 +541,12 @@ void loop() {
         action_time = millis();
         execute_voicevox(http_voicevox_text);
         avatar.setSpeechText("");
+    }
+
+    // 発話が終わったらVOICEVOXクラスを破棄
+    if (tts != nullptr && tts->isEnd) {
+        delete tts;
+        tts = nullptr;
     }
 
     // バッテリー状態を更新
