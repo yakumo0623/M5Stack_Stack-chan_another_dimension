@@ -400,7 +400,7 @@ void action() {
 
 void janken(String text) {
     const String gesture_text[] = {"ぐー", "ちょき", "ぱー"};
-    randomSeed(analogRead(0));
+    randomSeed(millis());
     String gesture_text_selected = gesture_text[random(0, 3)];
     String speech_text = "";
 
