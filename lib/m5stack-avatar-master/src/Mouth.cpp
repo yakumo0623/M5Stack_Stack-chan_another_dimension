@@ -1,4 +1,4 @@
-﻿// Copyright (c) Shinya Ishikawa. All rights reserved.
+// Copyright (c) Shinya Ishikawa. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full
 // license information.
 
@@ -22,7 +22,7 @@ void Mouth::draw(M5Canvas *spi, BoundingRect rect, DrawContext *ctx) {
   int x = rect.getLeft() - w / 2;
   int y = rect.getTop() - h / 2 + breath * 2;
   spi->fillRect(x, y, w, h, primaryColor);
-
+  
   // (カスタマイズ) ほっぺを表示
   uint16_t secondaryColor = ctx->getColorDepth() == 1 ? 1 : ctx->getColorPalette()->get(COLOR_SECONDARY);
   int cheeks_r = static_cast<int>(M5.Display.height() / 20);

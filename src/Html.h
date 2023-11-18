@@ -354,29 +354,16 @@ String html_update_apikey() {
     </html>)";
 }
 
-String html_chatgpt() {
+String html_text_ok() {
   return R"(
     <!DOCTYPE html>
     <html>
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ChatGPTにテキストを送りました</title>
+        <title>テキストを送りました</title>
       </head>
-      <body>ChatGPTにテキストを送りました</body>
-    </html>)";
-}
-
-String html_voicevox() {
-  return R"(
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>VOICEVOXにテキストを送りました</title>
-      </head>
-      <body>VOICEVOXにテキストを送りました</body>
+      <body>テキストを送りました</body>
     </html>)";
 }
 

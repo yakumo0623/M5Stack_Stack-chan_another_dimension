@@ -393,6 +393,39 @@ void execute_weather() {
     delete weather;
 }
 
+void action() {
+    M5.Display.setBrightness(config_brightness);           
+    action_time = millis();
+}
+
+void janken(String text) {
+    const String gesture_text[] = {"ぐー", "ちょき", "ぱー"};
+    randomSeed(analogRead(0));
+    String gesture_text_selected = gesture_text[random(0, 3)];
+    String speech_text = "";
+
+    action();
+    if (text == "") {
+        avatar.setExpression(Expression::Doubt);
+        speech_text = "？？？";            
+    }
+    else if (text == gesture_text_selected) {
+        avatar.setExpression(Expression::Neutral);
+        speech_text = gesture_text_selected + "：ひきわけ";
+    }
+    else if (text == "ぐー" && gesture_text_selected == "ちょき" ||
+        text == "ちょき" && gesture_text_selected == "ぱー" ||
+        text == "ぱー" && gesture_text_selected == "ぐー") {
+            avatar.setExpression(Expression::Sad);
+            speech_text = gesture_text_selected + "：わたしのまけ";
+    } else {
+        avatar.setExpression(Expression::Happy);
+        speech_text = gesture_text_selected + "：わたしのかち";
+    }
+    avatar.setSpeechText(speech_text.c_str());
+    M5.Log.printf("じゃんけん：%s %s %s\n", text.c_str(), gesture_text_selected.c_str(), speech_text.c_str());
+}
+
 void setup() {
     get_nvs_config();
     get_nvs_wifi();
@@ -443,12 +476,12 @@ void setup() {
     server.on("/chatgpt", HTTP_ANY, [](AsyncWebServerRequest *request) {
         http_chatgpt_flag = true;
         http_chatgpt_text = request->arg("text");
-        request->send(200, "text/html", html_chatgpt());
+        request->send(200, "text/html", html_text_ok());
     });
     server.on("/voicevox", HTTP_ANY, [](AsyncWebServerRequest *request) {
         http_voicevox_flag = true;
         http_voicevox_text = request->arg("text");
-        request->send(200, "text/html", html_voicevox());
+        request->send(200, "text/html", html_text_ok());
     });
     server.on("/apikey", HTTP_GET, [](AsyncWebServerRequest *request) {request->send(200, "text/html", html_apikey()); });
     server.on("/update_apikey", HTTP_ANY, [](AsyncWebServerRequest *request) {
@@ -456,6 +489,11 @@ void setup() {
         voicevox_apikey = request->arg("voicevox_apikey");
         set_nvs_apikey();
         request->send(200, "text/html", html_update_apikey());
+    });
+    server.on("/janken", HTTP_ANY, [](AsyncWebServerRequest *request) {
+        //String http_janken_text = request->arg("text");
+        janken(request->arg("text"));
+        request->send(200, "text/html", html_text_ok());
     });
     server.onNotFound([](AsyncWebServerRequest *request){ request->send(200, "text/html", html_not_found()); });
     server.begin();
@@ -476,8 +514,7 @@ void loop() {
         if (t.wasPressed()) {
             avatar.setExpression(Expression::Happy);
             avatar.setSpeechText("");
-            M5.Display.setBrightness(config_brightness);           
-            action_time = millis();
+            action();
             if (t.y <= 30 && t.x >= M5.Display.width() - 30) {
                 // IPアドレスを表示                
                 String local_ip =  WiFi.localIP().toString();
@@ -520,8 +557,7 @@ void loop() {
         http_chatgpt_flag = false;
         avatar.setExpression(Expression::Neutral);
         avatar.setSpeechText("");
-        M5.Display.setBrightness(config_brightness);           
-        action_time = millis();
+        action();
         String return_string = execute_chatgpt(http_chatgpt_text);                // ChatGPT
         return_string = String((set_expression(return_string.c_str())).c_str());  // 表情セット
         execute_voicevox(return_string);                                          // WebVoiceVox
@@ -533,8 +569,7 @@ void loop() {
         http_voicevox_flag = false;
         avatar.setExpression(Expression::Neutral);
         avatar.setSpeechText("");
-        M5.Display.setBrightness(config_brightness);           
-        action_time = millis();
+        action();
         execute_voicevox(http_voicevox_text);
         avatar.setSpeechText("");
     }
@@ -556,11 +591,10 @@ void loop() {
     // シェイク時の驚き
     M5.Imu.getAccel(&ax, &ay, &az);
     if (abs(ax) + abs(ay) + abs(az) > surprised_threshold && millis() - action_time >= duration_1000) {
-        M5.Display.setBrightness(int(config_brightness));
         avatar.setExpression(Expression::Doubt);
         surprised_text_selected = surprised_text[random(0, sizeof(surprised_text) / sizeof(surprised_text[0]))];
         avatar.setSpeechText(surprised_text_selected.c_str());
-        action_time = millis();
+        action();
     }
 
     // 天気予報を更新
