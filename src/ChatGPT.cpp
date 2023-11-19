@@ -93,6 +93,7 @@ String ChatGPT::completions(String text) {
     const String completion_tokens = doc["usage"]["completion_tokens"];
     const String content_2 = remove_newline(content);
     chat_history.push_back(content_2);
+    doc.clear();
 
     M5.Log.printf("ChatGPT：%s(%.1f秒)\n",content_2.c_str(), (millis() - start_time) / 1000.0); 
     M5.Log.printf("ChatGPT：(モデル：%s 入力トークン数：%s 出力トークン数：%s)\n", r_model.c_str(), prompt_tokens.c_str(), completion_tokens.c_str());

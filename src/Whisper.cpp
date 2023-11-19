@@ -138,6 +138,7 @@ String Whisper::transcriptions() {
             return "";
     }
     const String text = doc["text"];
+    doc.clear();
 
     M5.Log.printf("Whisper：%s(%.1f秒)\n", text.c_str(), (millis() - start_time) / 1000.0); 
     return text;

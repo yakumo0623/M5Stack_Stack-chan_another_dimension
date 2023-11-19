@@ -54,7 +54,9 @@ void Weather::report() {
     String weather_1 = doc_2[weather_code_1.c_str()];
     String weather_2 = doc_2[weather_code_2.c_str()];
     String weather_3 = doc_2[weather_code_3.c_str()];
-
+    doc.clear();
+    doc_2.clear();
+    
     getLocalTime(&timeinfo);
     if (timeinfo.tm_hour >= 0 && timeinfo.tm_hour <= 4) {
         today_weather = weather_2;
