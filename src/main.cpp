@@ -426,6 +426,35 @@ void janken(String text) {
     M5.Log.printf("じゃんけん：%s %s %s\n", text.c_str(), gesture_text_selected.c_str(), speech_text.c_str());
 }
 
+void hoi(String text) {
+    const String gesture_text[] = {"うえ", "ひだり", "みぎ", "した"};
+    randomSeed(millis());
+    String gesture_text_selected = gesture_text[random(0, 4)];
+    String speech_text = "";
+
+    action();
+    if (text == "") {
+        avatar.setExpression(Expression::Doubt);
+        speech_text = "？？？";            
+    }
+    else if (text == gesture_text_selected) {
+        avatar.setExpression(Expression::Sad);
+        speech_text = gesture_text_selected + "：まけたー";
+    } else {
+        avatar.setExpression(Expression::Happy);
+        speech_text = gesture_text_selected + "：せーふ";
+    }
+    float x = M5.Display.width() / 25;
+    float y = M5.Display.height() / 25;
+    if (gesture_text_selected == "うえ") { avatar.setGaze(y * -1, 0); }
+    else if (gesture_text_selected == "ひだり") { avatar.setGaze(0, x * -1); }
+    else if (gesture_text_selected == "みぎ") { avatar.setGaze(0, x); }
+    else if (gesture_text_selected == "した") { avatar.setGaze(y, 0); }
+    else { avatar.setGaze(0, 0); }
+    avatar.setSpeechText(speech_text.c_str());
+    M5.Log.printf("あっちむいてほい：%s %s %s\n", text.c_str(), gesture_text_selected.c_str(), speech_text.c_str());
+}
+
 void setup() {
     get_nvs_config();
     get_nvs_wifi();
@@ -494,6 +523,12 @@ void setup() {
     server.on("/update_janken", HTTP_ANY, [](AsyncWebServerRequest *request) {
         String text = request->arg("text");
         janken(text);
+        request->send(200, "text/html", html_ok());
+    });
+    server.on("/hoi", HTTP_GET, [](AsyncWebServerRequest *request) {request->send(200, "text/html", html_hoi()); });
+    server.on("/update_hoi", HTTP_ANY, [](AsyncWebServerRequest *request) {
+        String text = request->arg("text");
+        hoi(text);
         request->send(200, "text/html", html_ok());
     });
     server.onNotFound([](AsyncWebServerRequest *request){ request->send(200, "text/html", html_not_found()); });
@@ -582,7 +617,7 @@ void loop() {
     }
 
     // 居眠りモード
-    if (avatar.getExpression() != Expression::Sleepy && millis() - action_time >= duration_90000) {
+    if (avatar.getExpression() != Expression::Sleepy && millis() - action_time >= duration_60000) {
         M5.Display.setBrightness(int(config_brightness * sleepy_threshold));
         avatar.setExpression(Expression::Sleepy);
         sleepy_text_selected = sleepy_text[random(0, sizeof(sleepy_text) / sizeof(sleepy_text[0]))];

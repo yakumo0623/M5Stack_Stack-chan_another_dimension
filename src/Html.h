@@ -358,6 +358,37 @@ String html_janken() {
     </html>)";
 }
 
+String html_hoi() {
+  return R"(
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>あっちむいてほいゲーム</title>
+        <style>
+          button {font-size: 18px; padding: 10px 20px; margin: 10px; cursor: pointer;}
+        </style>
+      </head>
+      <body>
+        <h1>あっちむいてほいゲーム</h1>
+        <button onclick="playHoi('うえ') ">うえ</button>
+        <button onclick="playHoi('ひだり') ">ひだり</button>
+        <button onclick="playHoi('みぎ') ">みぎ</button>
+        <button onclick="playHoi('した') ">した</button>
+      </body>
+      <script>
+        function playHoi(userChoice) {
+          var xhr = new XMLHttpRequest();
+          xhr.open("POST", "/update_hoi", true);
+          xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+          var data = "text=" + encodeURIComponent(userChoice);
+          xhr.send(data);
+        }
+      </script>
+    </html>)";
+}
+
 String html_ok() {
   return R"(
     <!DOCTYPE html>
