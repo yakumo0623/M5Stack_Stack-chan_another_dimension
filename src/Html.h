@@ -279,19 +279,6 @@ String html_config() {
   return html_config_string_1 + html_config_string_2;
 }
 
-String html_update_config() {
-  return R"(
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>スタックチャンの設定をおこないました</title>
-      </head>
-      <body>スタックチャンの設定をおこないました</body>
-    </html>)";
-}
-
 String html_apikey() {
   return R"(
     <!DOCTYPE html>
@@ -341,29 +328,46 @@ String html_apikey() {
     </html>)";
 }
 
-String html_update_apikey() {
+String html_janken() {
   return R"(
     <!DOCTYPE html>
     <html>
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>スタックチャンの設定をおこないました</title>
+        <title>じゃんけんゲーム</title>
+        <style>
+          button {font-size: 18px; padding: 10px 20px; margin: 10px; cursor: pointer;}
+        </style>
       </head>
-      <body>スタックチャンの設定をおこないました</body>
+      <body>
+        <h1>じゃんけんゲーム</h1>
+        <button onclick="playJanken('ぐー') ">ぐー</button>
+        <button onclick="playJanken('ちょき') ">ちょき</button>
+        <button onclick="playJanken('ぱー') ">ぱー</button>
+      </body>
+      <script>
+        function playJanken(userChoice) {
+          var xhr = new XMLHttpRequest();
+          xhr.open("POST", "/update_janken", true);
+          xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+          var data = "text=" + encodeURIComponent(userChoice);
+          xhr.send(data);
+        }
+      </script>
     </html>)";
 }
 
-String html_text_ok() {
+String html_ok() {
   return R"(
     <!DOCTYPE html>
     <html>
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>テキストを送りました</title>
+        <title>成功しました</title>
       </head>
-      <body>テキストを送りました</body>
+      <body>成功しました</body>
     </html>)";
 }
 

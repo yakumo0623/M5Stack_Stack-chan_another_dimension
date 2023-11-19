@@ -417,10 +417,10 @@ void janken(String text) {
         text == "ちょき" && gesture_text_selected == "ぱー" ||
         text == "ぱー" && gesture_text_selected == "ぐー") {
             avatar.setExpression(Expression::Sad);
-            speech_text = gesture_text_selected + "：わたしのまけ";
+            speech_text = gesture_text_selected + "：まけたー";
     } else {
         avatar.setExpression(Expression::Happy);
-        speech_text = gesture_text_selected + "：わたしのかち";
+        speech_text = gesture_text_selected + "：かったー";
     }
     avatar.setSpeechText(speech_text.c_str());
     M5.Log.printf("じゃんけん：%s %s %s\n", text.c_str(), gesture_text_selected.c_str(), speech_text.c_str());
@@ -471,29 +471,30 @@ void setup() {
         MDNS.end();
         MDNS.begin(config_machine_name);
         execute_weather();
-        request->send(200, "text/html", html_update_config());
+        request->send(200, "text/html", html_ok());
     });
     server.on("/chatgpt", HTTP_ANY, [](AsyncWebServerRequest *request) {
         http_chatgpt_flag = true;
         http_chatgpt_text = request->arg("text");
-        request->send(200, "text/html", html_text_ok());
+        request->send(200, "text/html", html_ok());
     });
     server.on("/voicevox", HTTP_ANY, [](AsyncWebServerRequest *request) {
         http_voicevox_flag = true;
         http_voicevox_text = request->arg("text");
-        request->send(200, "text/html", html_text_ok());
+        request->send(200, "text/html", html_ok());
     });
     server.on("/apikey", HTTP_GET, [](AsyncWebServerRequest *request) {request->send(200, "text/html", html_apikey()); });
     server.on("/update_apikey", HTTP_ANY, [](AsyncWebServerRequest *request) {
         openai_apikey = request->arg("openai_apikey");
         voicevox_apikey = request->arg("voicevox_apikey");
         set_nvs_apikey();
-        request->send(200, "text/html", html_update_apikey());
+        request->send(200, "text/html", html_ok());
     });
-    server.on("/janken", HTTP_ANY, [](AsyncWebServerRequest *request) {
-        //String http_janken_text = request->arg("text");
-        janken(request->arg("text"));
-        request->send(200, "text/html", html_text_ok());
+    server.on("/janken", HTTP_GET, [](AsyncWebServerRequest *request) {request->send(200, "text/html", html_janken()); });
+    server.on("/update_janken", HTTP_ANY, [](AsyncWebServerRequest *request) {
+        String text = request->arg("text");
+        janken(text);
+        request->send(200, "text/html", html_ok());
     });
     server.onNotFound([](AsyncWebServerRequest *request){ request->send(200, "text/html", html_not_found()); });
     server.begin();
