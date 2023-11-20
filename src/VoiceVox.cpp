@@ -12,13 +12,16 @@ TaskHandle_t voicevox_task_handle;
 void voicevox_task_loop(void *args) {
     VoiceVox *ptr = static_cast<VoiceVox*>(args);
     for (;;) {
-        if (ptr->mp3->isRunning()) {
+        if (ptr->is_talking && ptr->mp3->isRunning()) {
             float level = abs(*(ptr->out->getBuffer()));
             if(level < 100) { level = 0; }
             if(level > 15000) { level = 15000; }
             avatar.setMouthOpenRatio(level / 15000.0);
             if (!ptr->mp3->loop()) {
+                ptr->is_talking = false;
                 ptr->mp3->stop();
+                delete ptr->mp3;
+                delete ptr->out;
                 delete ptr->file;
                 delete ptr->buff;
                 avatar.setMouthOpenRatio(0);
@@ -32,15 +35,12 @@ void voicevox_task_loop(void *args) {
 }
 
 VoiceVox::VoiceVox() {
-    mp3 = new AudioGeneratorMP3();
-    out = new AudioOutputM5Speaker(&M5.Speaker);
+    is_talking = false;
     xTaskCreateUniversal(voicevox_task_loop, "voicevox_task_loop", 2048, this, 1, &voicevox_task_handle, APP_CPU_NUM);
 }
 
 VoiceVox::~VoiceVox() {
     vTaskDelete(voicevox_task_handle);
-    delete mp3;
-    delete out;
 }
 
 String VoiceVox::synthesis(String text) {
@@ -85,9 +85,12 @@ String VoiceVox::synthesis(String text) {
 
 void VoiceVox::talk(String url) {
     M5.Log.println("発話：開始");
+    mp3 = new AudioGeneratorMP3();
+    out = new AudioOutputM5Speaker(&M5.Speaker);
     file = new AudioFileSourceHTTPSStream(url.c_str(), root_ca_voicevox);
     buff = new AudioFileSourceBuffer(file, 1024 * 10);
     M5.Mic.end();
     M5.Speaker.begin();
+    is_talking = true;
     mp3->begin(buff, out);
 }

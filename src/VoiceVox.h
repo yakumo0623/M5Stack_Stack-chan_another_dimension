@@ -19,6 +19,7 @@ public:
     AudioFileSourceHTTPSStream *file;
     AudioFileSourceBuffer *buff;
     AudioOutputM5Speaker *out;
+    bool is_talking;
 private:
     HTTPClient https;
     const String url = "https://api.tts.quest/v3/voicevox/synthesis";
