@@ -15,6 +15,8 @@
 using namespace m5avatar;
 Avatar avatar;
 
+VoiceVox* tts = new VoiceVox();
+
 AsyncWebServer server(80);
 
 // 初期値
@@ -377,13 +379,11 @@ void execute_voicevox(String text) {
     if (text == "") { return; }
     log_free_size("VOICEVOX");
     avatar.setSpeechText("すぅー …");
-    VoiceVox* tts = new VoiceVox();
     String return_string = tts->synthesis(text);
     if (return_string != "") {
         avatar.setSpeechText("おはなしちゅう …");
         tts->talk(return_string);
     }
-    delete tts;
 }
 
 void execute_weather() {

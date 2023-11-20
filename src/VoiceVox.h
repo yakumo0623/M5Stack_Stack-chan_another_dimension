@@ -15,13 +15,13 @@ public:
     ~VoiceVox();
     String synthesis(String text);
     void talk(String url);
-private:
-    HTTPClient https;
-    const String url = "https://api.tts.quest/v3/voicevox/synthesis";
     AudioGeneratorMP3 *mp3;
     AudioFileSourceHTTPSStream *file;
     AudioFileSourceBuffer *buff;
     AudioOutputM5Speaker *out;
+private:
+    HTTPClient https;
+    const String url = "https://api.tts.quest/v3/voicevox/synthesis";
 };
 
 #endif
