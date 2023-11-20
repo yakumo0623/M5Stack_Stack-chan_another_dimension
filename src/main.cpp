@@ -552,7 +552,9 @@ void loop() {
             avatar.setSpeechText("");
             action();
             if (t.y <= 30 && t.x >= M5.Display.width() - 30) {
-                // IPアドレスを表示                
+                // マシン名とIPアドレスを表示
+                avatar.setSpeechText(config_machine_name.c_str());
+                delay(2000);
                 String local_ip =  WiFi.localIP().toString();
                 avatar.setSpeechText(local_ip.c_str());
                 delay(3000);
