@@ -8,13 +8,16 @@
 
 ## ライブラリ
 
-- [M5Unified](https://github.com/m5stack/M5Unified)　MIT license
-- [m5stack-avatar](https://github.com/meganetaaan/m5stack-avatar)　MIT license
-- [SD](https://github.com/arduino-libraries/SD)　GPL-3.0 license
-- [ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer)　LGPL-2.1 license
-- [nvs](https://github.com/espressif/esp-idf/blob/master/components/nvs_flash/include/nvs.h)　Apache-2.0 license
-- [ESPmDNS](https://github.com/espressif/arduino-esp32/blob/master/libraries/ESPmDNS/src/ESPmDNS.h)　MIT license
-- [ESP8266Audio](https://github.com/earlephilhower/ESP8266Audio)　GPL-3.0 license
-- [HTTPClient](https://github.com/espressif/arduino-esp32/blob/master/libraries/HTTPClient/src/HTTPClient.h)　LGPL-2.1 license
-- [ArduinoJson](https://github.com/bblanchon/ArduinoJson)　MIT license
-
+- MIT license
+  - [M5Unified](https://github.com/m5stack/M5Unified)　MIT license
+  - [m5stack-avatar](https://github.com/meganetaaan/m5stack-avatar)　MIT license
+  - [ESPmDNS](https://github.com/espressif/arduino-esp32/blob/master/libraries/ESPmDNS/src/ESPmDNS.h)　MIT license
+  - [ArduinoJson](https://github.com/bblanchon/ArduinoJson)　MIT license
+- GPL-3.0 license
+  - [SD](https://github.com/arduino-libraries/SD)
+  - [ESP8266Audio](https://github.com/earlephilhower/ESP8266Audio)　GPL-3.0 license
+- LGPL-2.1 license
+  - [ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer)
+  - [HTTPClient](https://github.com/espressif/arduino-esp32/blob/master/libraries/HTTPClient/src/HTTPClient.h)　LGPL-2.1 license
+- Apache-2.0 license
+  - [nvs](https://github.com/espressif/esp-idf/blob/master/components/nvs_flash/include/nvs.h)
