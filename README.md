@@ -9,15 +9,15 @@
 ## ライブラリ
 
 - MIT license
-  - [M5Unified](https://github.com/m5stack/M5Unified)　MIT license
-  - [m5stack-avatar](https://github.com/meganetaaan/m5stack-avatar)　MIT license
-  - [ESPmDNS](https://github.com/espressif/arduino-esp32/blob/master/libraries/ESPmDNS/src/ESPmDNS.h)　MIT license
-  - [ArduinoJson](https://github.com/bblanchon/ArduinoJson)　MIT license
+  - [M5Unified](https://github.com/m5stack/M5Unified)
+  - [m5stack-avatar](https://github.com/meganetaaan/m5stack-avatar)
+  - [ESPmDNS](https://github.com/espressif/arduino-esp32/blob/master/libraries/ESPmDNS/src/ESPmDNS.h)
+  - [ArduinoJson](https://github.com/bblanchon/ArduinoJson)
 - GPL-3.0 license
   - [SD](https://github.com/arduino-libraries/SD)
-  - [ESP8266Audio](https://github.com/earlephilhower/ESP8266Audio)　GPL-3.0 license
+  - [ESP8266Audio](https://github.com/earlephilhower/ESP8266Audio)
 - LGPL-2.1 license
   - [ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer)
-  - [HTTPClient](https://github.com/espressif/arduino-esp32/blob/master/libraries/HTTPClient/src/HTTPClient.h)　LGPL-2.1 license
+  - [HTTPClient](https://github.com/espressif/arduino-esp32/blob/master/libraries/HTTPClient/src/HTTPClient.h)
 - Apache-2.0 license
   - [nvs](https://github.com/espressif/esp-idf/blob/master/components/nvs_flash/include/nvs.h)
