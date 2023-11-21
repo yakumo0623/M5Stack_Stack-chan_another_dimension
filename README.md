@@ -73,11 +73,13 @@
 
 ## 付加機能
 
-- ChatGPT直接実行
+- 90秒放置すると居眠りをする。
+- シェイクすると驚く。
+- ChatGPTを直接実行する。
   - 「http://（マシン名.local or IPアドレス）/chatgpt?text=テキスト文」
-- VOICEVOX直接実行
+- VOICEVOXを直接実行する。
   - 「http://（マシン名.local or IPアドレス）/voicevox?text=テキスト文」
-- じゃんけん
+- 「じゃんけん」をする。
   - 「http://（マシン名.local or IPアドレス）/janken」
-- あっちむいてほい
+- 「あっちむいてほい」をする。
   - 「http://（マシン名.local or IPアドレス）/hoi」
