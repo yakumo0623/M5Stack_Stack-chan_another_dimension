@@ -76,18 +76,19 @@ float ax, ay, az;  // 加速度
 
 // ネットワーク接続
 void connect_wifi() {
-    M5.Log.println("WIFI接続開始");
+    M5.Log.println("WIFI：接続開始");
     avatar.setSpeechText("せつぞくかいし");
+    M5.Log.printf("WIFI：接続情報（%s %s）\n", ssid.c_str(), password.c_str());
     WiFi.disconnect();
     WiFi.softAPdisconnect(true);
     WiFi.mode(WIFI_STA);    
     WiFi.begin(ssid.c_str(), password.c_str());
     while (WiFi.status() != WL_CONNECTED) {
-        M5.Log.println("WIFI接続中");
+        M5.Log.println("WIFI：接続中");
         avatar.setSpeechText("せつぞくちゅう …");
         delay(500);     
     }
-    M5.Log.printf("WIFI接続成功(%s)\n", WiFi.localIP().toString());
+    M5.Log.printf("WIFI：接続成功(%s)\n", WiFi.localIP().toString());
     avatar.setSpeechText("せつぞくせいこう");
     delay(500);
     avatar.setSpeechText("");
@@ -331,26 +332,35 @@ void log_free_size(const char* text) {
 // SDカードがある場合、wifi.txtの設定を読み込む
 void get_sdcard_wifi() {
     if (SD.begin(GPIO_NUM_4, SPI, 25000000)) {
-        ssid = "";      // SDカードの内容を入れるためにクリア
-        password = "";  // SDカードの内容を入れるためにクリア
-        auto fs = SD.open("/wifi.txt", FILE_READ);
-        if(fs) {
-            while (fs.available()) {
-                char currentChar = fs.read();
-                if (currentChar == '\r' || currentChar == '\n') {
-                    break;
+        M5.Log.println("SD：カードあり");
+        if (SD.exists("/wifi.txt")) {
+            M5.Log.println("SD：wifi.txtあり");
+            ssid = "";      // SDカードの内容を入れるためにクリア
+            password = "";  // SDカードの内容を入れるためにクリア
+            auto fs = SD.open("/wifi.txt", FILE_READ);
+            if(fs) {
+                while (fs.available()) {
+                    char currentChar = fs.read();
+                    if (currentChar == '\r' || currentChar == '\n') {
+                        break;
+                    }
+                    ssid += currentChar;
                 }
-                ssid += currentChar;
-            }
-            while (fs.available()) {
-                char currentChar = fs.read();
-                if (currentChar != '\r' && currentChar != '\n') {
-                    password += currentChar;
+                while (fs.available()) {
+                    char currentChar = fs.read();
+                    if (currentChar != '\r' && currentChar != '\n') {
+                        password += currentChar;
+                    }
                 }
+                M5.Log.printf("SD：読み取り情報（%s %s）\n", ssid.c_str(), password.c_str());
+                set_nvs_wifi();
             }
-            set_nvs_wifi();
+            fs.close();
+        } else {
+            M5.Log.println("SD：wifi.txtなし");
         }
-        fs.close();
+    } else {
+        M5.Log.println("SD：カードなし");
     }
 }
 
