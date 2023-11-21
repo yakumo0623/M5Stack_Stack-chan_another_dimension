@@ -1,6 +1,6 @@
 # M5Stack_Stack-chan_another_dimension
 
-![ｽﾀｯｸﾁｬﾝ](/image/stackchan.jpg) 
+ ![ｽﾀｯｸﾁｬﾝ](/image/stackchan.jpg)
 
 ## はじめに
 
@@ -44,5 +44,40 @@
 ## 利用の流れ
 
 1. SDカードのルートに「wifi.txt」を作成します。1行目に「SSID」、2行目に「PASSWORD」を記載します。
-改行コードは、「CRLF」「CR」「LF」どれでもOKですが、「BOMなし」形式で保存する必要があります。
-![BOMなし](/image/wifi_bomなし.jpg) 　![BOMあり](/image/wifi_bomあり.jpg) 
+    改行コードは、「CRLF」「CR」「LF」どれでもOKですが、「BOMなし」形式で保存する必要があります。
+   
+   ![BOMなし](/image/wifi_bomなし.jpg)   ![BOMあり](/image/wifi_bomあり.jpg) 
+
+
+2. 画面の右上のバッテリーアイコン付近を押すと、マシン名、IPアドレスが表示されます。
+    ブラウザで「http://（マシン名.local or IPアドレス）/apikey」を打つとAPIキーの登録画面が表示されます。APIキーを入力して「登録」ボタンを押します。
+   
+   ![apikey](/image/apikey.jpg) 
+
+
+3. ブラウザで「http://（マシン名.local or IPアドレス）/config」を打つと設定画面が表示されます。APIキーを入力して「登録」ボタンを押します。
+   
+   ![config](/image/config.jpg) 
+   
+   
+   - マシン名：同一LAN内で複数のｽﾀｯｸﾁｬﾝを使う場合は「.001」「.002」のようにしてください。
+   - 音量：スピーカーの音量です。
+   - 明るさ：画面の明るさです。
+   - 応答文字数：ChatGPTの応答文の文字数です。（※この制限は、守ってくれたりくれなかったり…。）
+   - 声：VOICEVOXの声の種類です。
+   - 口調、年代、一人称、二人称：この組み合わせで疑似的に性格を変えます。
+   - 色：背景、目・口、ほっぺの色です。
+   - 天気：天気予報の対象地域です。（※[出典：気象庁天気](https://www.jma.go.jp/jma/kishou/info/coment.html)）
+
+4. 画面の上半分を押すと「ｽﾀｯｸﾁｬﾝとの会話」ができます。画面の左下を押すと「日付・曜日・時間」を表示します。画面の右下を押すと「今日の天気・明日の天気」を表示します。
+
+## 付加機能
+
+- ChatGPT直接実行
+  - 「http://（マシン名.local or IPアドレス）/chatgpt?text=テキスト文」
+- VOICEVOX直接実行
+  - 「http://（マシン名.local or IPアドレス）/voicevox?text=テキスト文」
+- じゃんけん
+  - 「http://（マシン名.local or IPアドレス）/janken」
+- あっちむいてほい
+  - 「http://（マシン名.local or IPアドレス）/hoi」
