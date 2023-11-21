@@ -36,7 +36,7 @@ void voicevox_task_loop(void *args) {
 
 VoiceVox::VoiceVox() {
     is_talking = false;
-    xTaskCreateUniversal(voicevox_task_loop, "voicevox_task_loop", 2048, this, 1, &voicevox_task_handle, APP_CPU_NUM);
+    xTaskCreateUniversal(voicevox_task_loop, "voicevox_task_loop", 4096, this, 1, &voicevox_task_handle, APP_CPU_NUM);
 }
 
 VoiceVox::~VoiceVox() {
