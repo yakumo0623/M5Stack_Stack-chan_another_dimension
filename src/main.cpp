@@ -74,11 +74,21 @@ String http_voicevox_text;        // VOICEVOX直接実行：テキスト
 
 float ax, ay, az;  // 加速度
 
+// 読み込み時にAPIKEYを全て表示しないためのマスキング
+String mask(String value) {
+    if (value.length() < 4) { return value; }
+    String prefix = value.substring(0, 2);
+    String suffix = value.substring(value.length() - 2);
+    String asterisk = "";
+    for (int i = 0; i < (value.length() - 4); i++) { asterisk += "*"; }
+    return prefix + asterisk + suffix;
+}
+
 // ネットワーク接続
 void connect_wifi() {
     M5.Log.println("WIFI：接続開始");
     avatar.setSpeechText("せつぞくかいし");
-    M5.Log.printf("WIFI：接続情報（%s %s）\n", ssid.c_str(), password.c_str());
+    M5.Log.printf("WIFI：接続情報（%s %s）\n", mask(ssid).c_str(), mask(password).c_str());
     WiFi.disconnect();
     WiFi.softAPdisconnect(true);
     WiFi.mode(WIFI_STA);    
@@ -256,16 +266,6 @@ void get_nvs_config() {
         M5.Log.println("NVS：設定情報の読み込み失敗");
     }
     nvs_close(nvs);
-}
-
-// 読み込み時にAPIKEYを全て表示しないためのマスキング
-String mask(String value) {
-    if (value.length() < 4) { return value; }
-    String prefix = value.substring(0, 2);
-    String suffix = value.substring(value.length() - 2);
-    String asterisk = "";
-    for (int i = 0; i < (value.length() - 4); i++) { asterisk += "*"; }
-    return prefix + asterisk + suffix;
 }
 
 // APIKEY情報の読み込み

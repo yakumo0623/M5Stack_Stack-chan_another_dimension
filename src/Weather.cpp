@@ -35,7 +35,7 @@ void Weather::report() {
     const String response = https.getString();
     https.end();
 
-    DynamicJsonDocument doc(65536);
+    DynamicJsonDocument doc(32768);
     DeserializationError error = deserializeJson(doc, response);
     if (error) {
         M5.Log.println("Weather：JSONシリアル化エラー");
