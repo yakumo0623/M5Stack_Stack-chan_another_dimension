@@ -83,3 +83,7 @@
   - 「http://（マシン名.local or IPアドレス）/janken」
 - 「あっちむいてほい」をする。
   - 「http://（マシン名.local or IPアドレス）/hoi」
+
+## 特記事項
+
+- ほっぺを付けるために、「m5stack-avatar」の「Mouth.cpp」の26行目に処理を追記しています。（※libの下にあります。）
