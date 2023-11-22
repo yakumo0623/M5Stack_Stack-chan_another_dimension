@@ -24,6 +24,10 @@ void voicevox_task_loop(void *args) {
                 delete ptr->out;
                 delete ptr->file;
                 delete ptr->buff;
+                ptr->mp3 = nullptr;
+                ptr->out = nullptr;
+                ptr->file = nullptr;
+                ptr->buff = nullptr;
                 avatar.setMouthOpenRatio(0);
                 M5.Speaker.end();
                 M5.Mic.begin();

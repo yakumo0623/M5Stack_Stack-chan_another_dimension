@@ -372,6 +372,7 @@ String execute_whisper() {
     avatar.setSpeechText("もじおこしちゅう …");
     String return_string = stt->transcriptions();
     delete stt;
+    stt = nullptr;
     return return_string;
 }
 
@@ -382,6 +383,7 @@ String execute_chatgpt(String text) {
     ChatGPT* chat = new ChatGPT();
     String return_string = chat->completions(text);
     delete chat;
+    chat = nullptr;
     return return_string;
 }
 
@@ -404,6 +406,7 @@ void execute_weather() {
     Weather* weather = new Weather();
     weather->report();
     delete weather;
+    weather = nullptr;
 }
 
 void action() {
