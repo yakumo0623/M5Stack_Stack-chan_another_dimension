@@ -530,13 +530,13 @@ void setup() {
         request->send(200, "text/html", html_ok());
     });
     server.on("/janken", HTTP_GET, [](AsyncWebServerRequest *request) {request->send(200, "text/html", html_janken()); });
-    server.on("/update_janken", HTTP_ANY, [](AsyncWebServerRequest *request) {
+    server.on("/execute_janken", HTTP_ANY, [](AsyncWebServerRequest *request) {
         String text = request->arg("text");
         janken(text);
         request->send(200, "text/html", html_ok());
     });
     server.on("/hoi", HTTP_GET, [](AsyncWebServerRequest *request) {request->send(200, "text/html", html_hoi()); });
-    server.on("/update_hoi", HTTP_ANY, [](AsyncWebServerRequest *request) {
+    server.on("/execute_hoi", HTTP_ANY, [](AsyncWebServerRequest *request) {
         String text = request->arg("text");
         hoi(text);
         request->send(200, "text/html", html_ok());

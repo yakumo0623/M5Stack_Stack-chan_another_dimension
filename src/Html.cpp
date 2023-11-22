@@ -326,7 +326,7 @@ String html_janken() {
       <script>
         function playJanken(userChoice) {
           var xhr = new XMLHttpRequest();
-          xhr.open("POST", "/update_janken", true);
+          xhr.open("POST", "/execute_janken", true);
           xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
           var data = "text=" + encodeURIComponent(userChoice);
           xhr.send(data);
@@ -357,7 +357,7 @@ String html_hoi() {
       <script>
         function playHoi(userChoice) {
           var xhr = new XMLHttpRequest();
-          xhr.open("POST", "/update_hoi", true);
+          xhr.open("POST", "/execute_hoi", true);
           xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
           var data = "text=" + encodeURIComponent(userChoice);
           xhr.send(data);
