@@ -385,15 +385,18 @@ String execute_chatgpt(String text) {
     return return_string;
 }
 
-void execute_voicevox(String text) {
-    if (text == "") { return; }
+String execute_voicevox(String text) {
+    if (text == "") { return ""; }
     log_free_size("VOICEVOX");
     avatar.setSpeechText("すぅー …");
     String return_string = tts->synthesis(text);
-    if (return_string != "") {
-        avatar.setSpeechText("おはなしちゅう …");
-        tts->talk(return_string);
-    }
+    return return_string;
+}
+
+void execute_talk(String text) {
+    if (text == "") { return; }
+    avatar.setSpeechText("おはなしちゅう …");
+    tts->talk(text);
 }
 
 void execute_weather() {
@@ -574,7 +577,8 @@ void loop() {
                 String return_string = execute_whisper();                                 // Whisper
                 return_string = execute_chatgpt(return_string);                           // ChatGPT
                 return_string = String((set_expression(return_string.c_str())).c_str());  // 表情セット
-                execute_voicevox(return_string);                                          // WebVoiceVox
+                return_string = execute_voicevox(return_string);                          // WebVoiceVox
+                execute_talk(return_string);                                              // 発話
             } else if (t.y > M5.Display.height() / 2 && t.x <= M5.Display.width() / 2) {
                 // 現在日時を表示
                 struct tm timeinfo;
@@ -608,7 +612,8 @@ void loop() {
         action();
         String return_string = execute_chatgpt(http_chatgpt_text);                // ChatGPT
         return_string = String((set_expression(return_string.c_str())).c_str());  // 表情セット
-        execute_voicevox(return_string);                                          // WebVoiceVox
+        return_string = execute_voicevox(return_string);                          // WebVoiceVox
+        execute_talk(return_string);                                              // 発話
         avatar.setSpeechText("");
     }
 
@@ -618,7 +623,8 @@ void loop() {
         avatar.setExpression(Expression::Neutral);
         avatar.setSpeechText("");
         action();
-        execute_voicevox(http_voicevox_text);
+        String return_string = execute_voicevox(http_voicevox_text);
+        execute_talk(return_string); 
         avatar.setSpeechText("");
     }
 
