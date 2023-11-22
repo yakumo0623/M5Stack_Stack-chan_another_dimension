@@ -407,7 +407,9 @@ void execute_weather() {
 }
 
 void action() {
-    M5.Display.setBrightness(config_brightness);           
+    M5.Display.setBrightness(config_brightness);
+    avatar.setExpression(Expression::Neutral);
+    avatar.setSpeechText("");       
     action_time = millis();
 }
 
@@ -561,8 +563,6 @@ void loop() {
     if (count) {
         auto t = M5.Touch.getDetail();
         if (t.wasPressed()) {
-            avatar.setExpression(Expression::Happy);
-            avatar.setSpeechText("");
             action();
             if (t.y <= 30 && t.x >= M5.Display.width() - 30) {
                 // マシン名とIPアドレスを表示
@@ -607,8 +607,6 @@ void loop() {
     // 直接ChatGPTを呼ぶ
     if (http_chatgpt_flag == true) {
         http_chatgpt_flag = false;
-        avatar.setExpression(Expression::Neutral);
-        avatar.setSpeechText("");
         action();
         String return_string = execute_chatgpt(http_chatgpt_text);                // ChatGPT
         return_string = String((set_expression(return_string.c_str())).c_str());  // 表情セット
@@ -620,8 +618,6 @@ void loop() {
     // 直接VOICEVOXを呼ぶ
     if (http_voicevox_flag == true) {
         http_voicevox_flag = false;
-        avatar.setExpression(Expression::Neutral);
-        avatar.setSpeechText("");
         action();
         String return_string = execute_voicevox(http_voicevox_text);
         execute_talk(return_string); 
@@ -645,10 +641,10 @@ void loop() {
     // シェイク時の驚き
     M5.Imu.getAccel(&ax, &ay, &az);
     if (abs(ax) + abs(ay) + abs(az) > surprised_threshold && millis() - action_time >= duration_1000) {
+        action();
         avatar.setExpression(Expression::Doubt);
         surprised_text_selected = surprised_text[random(0, sizeof(surprised_text) / sizeof(surprised_text[0]))];
         avatar.setSpeechText(surprised_text_selected.c_str());
-        action();
     }
 
     // 天気予報を更新
