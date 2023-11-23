@@ -1,6 +1,7 @@
 #include <Avatar.h>
 #include "VoiceVox.h"
 #include "rootCA.h"
+#include "MyFunction.h"
 
 extern m5avatar::Avatar avatar;
 extern String voicevox_apikey;
@@ -31,6 +32,7 @@ void voicevox_task_loop(void *args) {
                 avatar.setMouthOpenRatio(0);
                 M5.Speaker.end();
                 M5.Mic.begin();
+                log_free_size("VOICEVOX：OUT");
                 M5.Log.println("発話：終了");
             }
         }

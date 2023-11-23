@@ -89,6 +89,7 @@ Whisper::Whisper() {
 
 Whisper::~Whisper() {
     heap_caps_free(form_data);
+    form_data = nullptr;
 }
 
 void Whisper::record() {

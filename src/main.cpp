@@ -11,6 +11,7 @@
 #include "RootCA.h"
 #include "Html.h"
 #include "Weather.h"
+#include "MyFunction.h"
 
 using namespace m5avatar;
 Avatar avatar;
@@ -73,16 +74,6 @@ bool http_voicevox_flag = false;  // VOICEVOX直接実行：フラグ
 String http_voicevox_text;        // VOICEVOX直接実行：テキスト
 
 float ax, ay, az;  // 加速度
-
-// 読み込み時にAPIKEYを全て表示しないためのマスキング
-String mask(String value) {
-    if (value.length() < 4) { return value; }
-    String prefix = value.substring(0, 2);
-    String suffix = value.substring(value.length() - 2);
-    String asterisk = "";
-    for (int i = 0; i < (value.length() - 4); i++) { asterisk += "*"; }
-    return prefix + asterisk + suffix;
-}
 
 // ネットワーク接続
 void connect_wifi() {
@@ -314,21 +305,6 @@ void get_nvs_wifi() {
     nvs_close(nvs);
 }
 
-// RGB文字列を赤緑青に分解
-void hex_to_dec(String hexString, uint8_t* red, uint8_t* green, uint8_t* blue) {
-    char* endPtr;
-    *red = strtol(hexString.substring(1, 3).c_str(), &endPtr, 16);
-    *green = strtol(hexString.substring(3, 5).c_str(), &endPtr, 16);
-    *blue = strtol(hexString.substring(5, 7).c_str(), &endPtr, 16);
-}
-
-// 空きメモリをシリアル出力
-void log_free_size(const char* text) {
-    M5.Log.printf("%s メモリ残/最大ブロック残（DEFAULT->DMA）：%4dKB/%4dKB %3dKB/%3dKB\n", text, 
-        heap_caps_get_free_size(MALLOC_CAP_DEFAULT) / 1024, heap_caps_get_largest_free_block(MALLOC_CAP_DEFAULT) / 1024, 
-        heap_caps_get_free_size(MALLOC_CAP_DMA) / 1024, heap_caps_get_largest_free_block(MALLOC_CAP_DMA) / 1024);
-}
-
 // SDカードがある場合、wifi.txtの設定を読み込む
 void get_sdcard_wifi() {
     if (SD.begin(GPIO_NUM_4, SPI, 25000000)) {
@@ -365,7 +341,7 @@ void get_sdcard_wifi() {
 }
 
 String execute_whisper() {
-    log_free_size("Whisper");
+    log_free_size("Whisper：IN");
     avatar.setSpeechText("ききとりちゅう …");
     Whisper* stt = new Whisper();
     stt->record();
@@ -373,23 +349,25 @@ String execute_whisper() {
     String return_string = stt->transcriptions();
     delete stt;
     stt = nullptr;
+    log_free_size("Whisper：OUT");
     return return_string;
 }
 
 String execute_chatgpt(String text) {
     if (text == "") { return ""; }
-    log_free_size("ChatGPT");
+    log_free_size("ChatGPT：IN");
     avatar.setSpeechText("かんがえちゅう …");
     ChatGPT* chat = new ChatGPT();
     String return_string = chat->completions(text);
     delete chat;
     chat = nullptr;
+    log_free_size("ChatGPT：OUT");
     return return_string;
 }
 
 String execute_voicevox(String text) {
     if (text == "") { return ""; }
-    log_free_size("VOICEVOX");
+    log_free_size("VOICEVOX：IN");
     avatar.setSpeechText("すぅー …");
     String return_string = tts->synthesis(text);
     return return_string;
