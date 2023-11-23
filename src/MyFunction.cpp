@@ -20,7 +20,8 @@ void hex_to_dec(String hexString, uint8_t* red, uint8_t* green, uint8_t* blue) {
 
 // 空きメモリをシリアル出力
 void log_free_size(const char* text) {
-    M5.Log.printf("%s メモリ残/最大ブロック残（DEFAULT->DMA）：%4dKB/%4dKB %3dKB/%3dKB\n", text, 
+    M5.Log.printf("%s メモリ残/最大ブロック残（DEFAULT->DMA->SPIRAM）：%4dKB/%4dKB %3dKB/%3dKB %4dKB/%4dKB\n", text, 
         heap_caps_get_free_size(MALLOC_CAP_DEFAULT) / 1024, heap_caps_get_largest_free_block(MALLOC_CAP_DEFAULT) / 1024, 
-        heap_caps_get_free_size(MALLOC_CAP_DMA) / 1024, heap_caps_get_largest_free_block(MALLOC_CAP_DMA) / 1024);
+        heap_caps_get_free_size(MALLOC_CAP_DMA) / 1024, heap_caps_get_largest_free_block(MALLOC_CAP_DMA) / 1024,
+        heap_caps_get_free_size(MALLOC_CAP_SPIRAM) / 1024, heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM) / 1024);
 }
