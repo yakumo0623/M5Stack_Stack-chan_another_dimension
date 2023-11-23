@@ -584,6 +584,7 @@ void loop() {
                 execute_talk(return_string);                                              // 発話
             } else if (t.y > M5.Display.height() / 2 && t.x <= M5.Display.width() / 2) {
                 // 現在日時を表示
+                avatar.setExpression(Expression::Happy);
                 struct tm timeinfo;
                 getLocalTime(&timeinfo);
                 char formatted_time[6];
@@ -594,6 +595,7 @@ void loop() {
                 delay(3000);
             } else {
                 // 天気を表示
+                avatar.setExpression(Expression::Happy);
                 avatar.setSpeechText("今日の天気");
                 delay(1000);
                 avatar.setSpeechText(today_weather.c_str());
