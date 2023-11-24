@@ -514,6 +514,17 @@ void setup() {
         http_voicevox_text = request->arg("text");
         request->send(200, "text/html", html_ok());
     });
+    server.on("/text", HTTP_ANY, [](AsyncWebServerRequest *request) {
+        action();
+        if (request->arg("expression") == "Happy") { avatar.setExpression(Expression::Happy); }
+        else if (request->arg("expression") == "Sad") { avatar.setExpression(Expression::Sad); }
+        else if (request->arg("expression") == "Angry") { avatar.setExpression(Expression::Angry); }
+        else if (request->arg("expression") == "Doubt") { avatar.setExpression(Expression::Doubt); }
+        else if (request->arg("expression") == "Sleepy") { avatar.setExpression(Expression::Sleepy); }
+        else { avatar.setExpression(Expression::Neutral); }
+        avatar.setSpeechText(request->arg("text").c_str());
+        request->send(200, "text/html", html_ok());
+    });
     server.on("/apikey", HTTP_GET, [](AsyncWebServerRequest *request) {request->send(200, "text/html", html_apikey()); });
     server.on("/update_apikey", HTTP_ANY, [](AsyncWebServerRequest *request) {
         openai_apikey = request->arg("openai_apikey");
@@ -558,6 +569,7 @@ void loop() {
                 String local_ip =  WiFi.localIP().toString();
                 avatar.setSpeechText(local_ip.c_str());
                 delay(3000);
+                avatar.setSpeechText("");
             } else if (t.y <= M5.Display.height() / 2) {
                 // 会話
                 avatar.setExpression(Expression::Neutral);           
@@ -577,6 +589,7 @@ void loop() {
                 datetime += " " + String(formatted_time);
                 avatar.setSpeechText(datetime.c_str());
                 delay(3000);
+                avatar.setSpeechText("");
             } else {
                 // 天気を表示
                 avatar.setExpression(Expression::Happy);
@@ -588,8 +601,8 @@ void loop() {
                 delay(1000);
                 avatar.setSpeechText(tomorrow_weather.c_str());
                 delay(3000);
+                avatar.setSpeechText("");
             }
-            avatar.setSpeechText("");
         }
     }
 
