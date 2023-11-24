@@ -69,7 +69,7 @@
    - 口調、年代、一人称、二人称：この組み合わせで疑似的に性格を変えます。
    - 色：背景、目・口、ほっぺの色です。
 - 天気：天気予報の対象地域です。（※[出典：気象庁天気予報](https://www.jma.go.jp/jma/kishou/info/coment.html)）
-   
+  
 4. 画面の上半分を押すと「ｽﾀｯｸﾁｬﾝとの会話」ができます。画面の左下を押すと「日付・曜日・時間」を表示します。画面の右下を押すと「今日の天気・明日の天気」を表示します。
 
 ## 付加機能
@@ -80,6 +80,8 @@
   - 「http://（マシン名.local or IPアドレス）/chatgpt?text=テキスト文」
 - VOICEVOXを直接実行する。
   - 「http://（マシン名.local or IPアドレス）/voicevox?text=テキスト文」
+- テキストを表示する。
+  - 「http://（マシン名.local or IPアドレス）/text?text=テキスト文&expression=(Happy/Angry/Doubt/Sad/Sleepy/Neutral)」
 - 「じゃんけん」をする。
   - 「http://（マシン名.local or IPアドレス）/janken」
 - 「あっちむいてほい」をする。

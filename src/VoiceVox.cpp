@@ -30,6 +30,7 @@ void voicevox_task_loop(void *args) {
                 ptr->file = nullptr;
                 ptr->buff = nullptr;
                 avatar.setMouthOpenRatio(0);
+                avatar.setSpeechText("");
                 M5.Speaker.end();
                 M5.Mic.begin();
                 log_free_size("VOICEVOX：OUT");
