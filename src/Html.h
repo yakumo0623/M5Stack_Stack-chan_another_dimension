@@ -7,6 +7,7 @@ extern String config_machine_name;
 extern uint8_t config_volume;
 extern uint8_t config_brightness;
 extern uint8_t config_word_count;
+extern uint8_t config_history_count;
 extern uint8_t config_speaker;
 extern uint8_t config_color1_red;
 extern uint8_t config_color1_green;

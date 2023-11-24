@@ -45,6 +45,8 @@ String config_first_person = "わたし";     // 一人称
 String config_second_person = "あなた";    // 二人称
 String config_weather = "130000";          // 天気：東京
 uint16_t https_timeout = 20000;            // HTTPタイムアウト時間
+uint8_t config_history_count = 3;          // ChatGPT履歴の自分の発話最大数
+std::deque<String> chat_history;           // ChatGPT履歴のキュー
 
 String today_weather;     // 今日の天気
 String tomorrow_weather;  // 明日の天気
@@ -138,6 +140,7 @@ void set_nvs_config() {
         nvs_set_u8(nvs, "volume", config_volume);
         nvs_set_u8(nvs, "brightness", config_brightness);
         nvs_set_u8(nvs, "word_count", config_word_count);
+        nvs_set_u8(nvs, "history_count", config_history_count);
         nvs_set_u8(nvs, "speaker", config_speaker);
         nvs_set_str(nvs, "tone", config_tone.c_str());
         nvs_set_str(nvs, "age", config_age.c_str());
@@ -153,8 +156,8 @@ void set_nvs_config() {
         nvs_set_u8(nvs, "color3_green", config_color3_green);
         nvs_set_u8(nvs, "color3_blue", config_color3_blue);
         nvs_set_str(nvs, "weather", config_weather.c_str());
-        M5.Log.printf("NVS：設定情報の保存成功(%s %d %d %d %d %s %s %s %s %d %d %d %d %d %d %d %d %d %s)\n", 
-            config_machine_name.c_str(), config_volume, config_brightness, config_word_count, config_speaker,
+        M5.Log.printf("NVS：設定情報の保存成功(%s %d %d %d %d %d %s %s %s %s %d %d %d %d %d %d %d %d %d %s)\n", 
+            config_machine_name.c_str(), config_volume, config_brightness, config_word_count, config_history_count, config_speaker,
             config_tone.c_str(), config_age.c_str(), config_first_person.c_str(), config_second_person.c_str(), 
             config_color1_red, config_color1_green, config_color1_blue, config_color2_red, config_color2_green, config_color2_blue,
             config_color3_red, config_color3_green, config_color3_blue, config_weather);
@@ -218,6 +221,7 @@ void get_nvs_config() {
         nvs_get_u8(nvs, "volume", &config_volume);
         nvs_get_u8(nvs, "brightness", &config_brightness);
         nvs_get_u8(nvs, "word_count", &config_word_count);
+        nvs_get_u8(nvs, "history_count", &config_history_count);
         nvs_get_u8(nvs, "speaker", &config_speaker);
         if (nvs_get_str(nvs, "tone", 0, &length) == ESP_OK) {
             nvs_get_str(nvs, "tone", value, &length);
@@ -248,8 +252,8 @@ void get_nvs_config() {
             nvs_get_str(nvs, "weather", value, &length);
             config_weather = String(value);
         }
-        M5.Log.printf("NVS：設定情報の読み込み成功(%s %d %d %d %d %s %s %s %s %d %d %d %d %d %d %d %d %d %s)\n", 
-            config_machine_name.c_str(), config_volume, config_brightness, config_word_count, config_speaker,
+        M5.Log.printf("NVS：設定情報の読み込み成功(%s %d %d %d %d %d %s %s %s %s %d %d %d %d %d %d %d %d %d %s)\n", 
+            config_machine_name.c_str(), config_volume, config_brightness, config_word_count, config_history_count, config_speaker,
             config_tone.c_str(), config_age.c_str(), config_first_person.c_str(), config_second_person.c_str(), 
             config_color1_red, config_color1_green, config_color1_blue, config_color2_red, config_color2_green, config_color2_blue,
             config_color3_red, config_color3_green, config_color3_blue, config_weather);
@@ -480,6 +484,7 @@ void setup() {
         config_volume = request->arg("volume").toInt();
         config_brightness = request->arg("brightness").toInt();
         config_word_count = request->arg("word_count").toInt();
+        config_history_count = request->arg("history_count").toInt();
         config_speaker = request->arg("speaker").toInt();
         config_tone = request->arg("tone");
         config_age = request->arg("age");
@@ -496,6 +501,7 @@ void setup() {
         MDNS.end();
         MDNS.begin(config_machine_name);
         execute_weather();
+        chat_history.clear();
         request->send(200, "text/html", html_ok());
     });
     server.on("/chatgpt", HTTP_ANY, [](AsyncWebServerRequest *request) {

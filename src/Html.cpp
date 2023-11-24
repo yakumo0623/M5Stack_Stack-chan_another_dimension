@@ -72,6 +72,11 @@ const String html_config_string_1 = R"(
           <input type="range" id="wordCountSlider" name="word_count" min="10" max="100" step="10">
           <output for="wordCountSlider" id="selectedWordCount"></output>
         </div>
+        <div>
+          <label for="historyCountSlider">チャット履歴数：</label>
+          <input type="range" id="historyCountSlider" name="history_count" min="1" max="10" step="1">
+          <output for="historyCountSlider" id="selectedHistoryCount"></output>
+        </div>
         声(VOICEVOX)：<select id="speaker" name="speaker"></select><br>
         口調：<select id="tone" name="tone"></select><br>
         年代：<select id="age" name="age"></select><br>
@@ -102,6 +107,8 @@ const String html_config_string_1 = R"(
       const selectedBrightness = document.getElementById("selectedBrightness");
       const wordCountSlider = document.getElementById("wordCountSlider");
       const selectedWordCount = document.getElementById("selectedWordCount");
+      const historyCountSlider = document.getElementById("historyCountSlider");
+      const selectedHistoryCount = document.getElementById("selectedHistoryCount");
       const color1 = document.getElementById("color1");
       const color2 = document.getElementById("color2");
       const color3 = document.getElementById("color3");
@@ -129,6 +136,10 @@ const String html_config_string_1 = R"(
 
       wordCountSlider.addEventListener("input", function() {
         selectedWordCount.textContent = wordCountSlider.value;
+      });
+
+      historyCountSlider.addEventListener("input", function() {
+        selectedHistoryCount.textContent = historyCountSlider.value;
       });
 
       color1.addEventListener("input", () => {
@@ -180,6 +191,8 @@ String html_config() {
           selectedBrightness.textContent = )" + String(config_brightness) + R"(;
           wordCountSlider.value = )" + String(config_word_count) + R"(;
           selectedWordCount.textContent = )" + String(config_word_count) + R"(;
+          historyCountSlider.value = )" + String(config_history_count) + R"(;
+          selectedHistoryCount.textContent = )" + String(config_history_count) + R"(;
           container.style.backgroundColor = ")" + color1 + R"(";
           color1.value = ")" + color1 + R"(";
           circle1.style.backgroundColor = ")" + color2 + R"(";
