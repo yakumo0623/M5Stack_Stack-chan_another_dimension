@@ -48,6 +48,7 @@ uint16_t https_timeout = 20000;            // HTTPタイムアウト時間
 uint8_t config_history_count = 3;          // ChatGPT履歴の自分の発話最大数
 std::deque<String> chat_history;           // ChatGPT履歴のキュー
 
+String speaker_name = "";
 String today_weather;     // 今日の天気
 String tomorrow_weather;  // 明日の天気
 
@@ -379,7 +380,7 @@ String execute_voicevox(String text) {
 
 void execute_talk(String text) {
     if (text == "") { return; }
-    avatar.setSpeechText("おはなしちゅう …");
+    avatar.setSpeechText("VOICEVOX：");
     tts->talk(text);
 }
 
@@ -501,6 +502,7 @@ void setup() {
         MDNS.end();
         MDNS.begin(config_machine_name);
         execute_weather();
+        speaker_name = get_speaker_name(String(config_speaker));
         chat_history.clear();
         request->send(200, "text/html", html_ok());
     });
@@ -551,6 +553,7 @@ void setup() {
     configTime(3600 * 9, 0, "ntp.nict.jp", "ntp.jst.mfeed.ad.jp");
     avatar.setBatteryStatus(M5.Power.isCharging(), M5.Power.getBatteryLevel());
     execute_weather();
+    speaker_name = get_speaker_name(String(config_speaker));
     log_free_size("初期化終了");
 }
 

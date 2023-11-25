@@ -7,6 +7,7 @@ extern m5avatar::Avatar avatar;
 extern String voicevox_apikey;
 extern uint8_t config_speaker;
 extern uint16_t https_timeout;
+extern String speaker_name;
 
 TaskHandle_t voicevox_task_handle;
 
@@ -17,6 +18,7 @@ void voicevox_task_loop(void *args) {
             float level = abs(*(ptr->out->getBuffer()));
             if(level < 100) { level = 0; }
             if(level > 15000) { level = 15000; }
+            avatar.setSpeechText(speaker_name.c_str());
             avatar.setMouthOpenRatio(level / 15000.0);
             if (!ptr->mp3->loop()) {
                 ptr->is_talking = false;
