@@ -342,14 +342,27 @@ String html_janken() {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>じゃんけんゲーム</title>
         <style>
-          button {font-size: 18px; padding: 10px 20px; margin: 10px; cursor: pointer;}
+          body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+          }
+          .container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: center; }
+          button { width: 100px; height: 100px; font-size: 16px; }
+          #goo { grid-column: 1; }
+          #choki { grid-column: 2; }
+          #par { grid-column: 3; }
         </style>
       </head>
       <body>
         <h1>じゃんけんゲーム</h1>
-        <button onclick="playJanken('ぐー') ">ぐー</button>
-        <button onclick="playJanken('ちょき') ">ちょき</button>
-        <button onclick="playJanken('ぱー') ">ぱー</button>
+        <div class="container">
+          <button id="goo" onclick="playJanken('ぐー') ">ぐー</button>
+          <button id="choki" onclick="playJanken('ちょき') ">ちょき</button>
+          <button id="par" onclick="playJanken('ぱー') ">ぱー</button>
+        </div>
       </body>
       <script>
         function playJanken(userChoice) {
@@ -372,15 +385,30 @@ String html_hoi() {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>あっちむいてほいゲーム</title>
         <style>
-          button {font-size: 18px; padding: 10px 20px; margin: 10px; cursor: pointer;}
+          body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+          }
+          .container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: center; }
+          button { width: 100px; height: 100px; font-size: 16px; }
+          #up { grid-column: 2; }
+          #left { grid-column: 1; grid-row: 2; }
+          #right { grid-column: 3; grid-row: 2; }
+          #down { grid-column: 2; grid-row: 3; }
         </style>
       </head>
       <body>
         <h1>あっちむいてほいゲーム</h1>
-        <button onclick="playHoi('うえ') ">うえ</button>
-        <button onclick="playHoi('ひだり') ">ひだり</button>
-        <button onclick="playHoi('みぎ') ">みぎ</button>
-        <button onclick="playHoi('した') ">した</button>
+        <p>
+        <div class="container">
+          <button id="up" onclick="playHoi('うえ') ">うえ</button>
+          <button id="left" onclick="playHoi('ひだり') ">ひだり</button>
+          <button id="right" onclick="playHoi('みぎ') ">みぎ</button>
+          <button id="down" onclick="playHoi('した') ">した</button>
+        </div>
       </body>
       <script>
         function playHoi(userChoice) {
