@@ -4,13 +4,26 @@ String html_root() {
   return R"(
     <!DOCTYPE html>
     <html>
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>こんにちは、スタックチャンの世界へ</title>
-      </head>
-      <body>こんにちは、スタックチャンの世界へ</body>
-    </html>)";
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>ようこそ、スタックチャンの世界へ</title>
+    </head>
+    <body>
+      <h1>ようこそ、スタックチャンの世界へ</h1>
+      <nav>
+        <ul>
+          <li><a href="/config">コンフィグの設定</a></li>
+          <li><a href="/apikey">APIキーの登録</a></li>
+          <li><a href="/chatgpt">ChatGPTにテキスト送信</a></li>
+          <li><a href="/voicevox">VOICEVOXにテキスト送信</a></li>
+          <li><a href="/text">テキスト表示</a></li>
+          <li><a href="/janken">じゃんけん</a></li>
+          <li><a href="/hoi">あっちむいてほい</a></li>
+        </ul>
+      </nav>
+    </body>
+  </html>)";
 }
 
 String html_not_found() {
@@ -55,6 +68,7 @@ const String html_config_string_1 = R"(
       </style>
     </head>
     <body>
+      <h1>コンフィグの設定</h1>
       <form id="settingsForm">
         マシン名：<input id="machine_name" name="machine_name"></input><br>
         <div>
@@ -279,6 +293,7 @@ String html_apikey() {
         <title>API KEYの登録</title>
       </head>
       <body>
+        <h1>APIキーの登録</h1>
         <form id="settingsForm">
           <label for="openai_apikey">OpenAI API Key：</label>
           <input type="text" id="openai_apikey" name="openai_apikey">
