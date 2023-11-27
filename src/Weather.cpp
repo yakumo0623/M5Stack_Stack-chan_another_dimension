@@ -19,6 +19,7 @@ void Weather::report() {
     M5.Log.println("Weather：開始");
     uint32_t start_time = millis();
 
+    HTTPClient https;
     https.setTimeout(30000);
     if (!https.begin(url + "/" + config_weather + ".json", root_ca_jma)) {
         M5.Log.println("Weather：接続失敗");

@@ -11,7 +11,6 @@ public:
     ~Weather();
     void report();
 private:
-    HTTPClient https;
     const String url = "https://www.jma.go.jp/bosai/forecast/data/forecast";
 };
 

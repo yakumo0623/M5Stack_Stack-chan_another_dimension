@@ -12,7 +12,6 @@ public:
     void record();
     String transcriptions();
 private:
-    HTTPClient https;
     const String url = "https://api.openai.com/v1/audio/transcriptions";
     byte* form_data;
 };

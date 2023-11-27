@@ -23,14 +23,10 @@ void voicevox_task_loop(void *args) {
             if (!ptr->mp3->loop()) {
                 ptr->is_talking = false;
                 ptr->mp3->stop();
-                delete ptr->mp3;
-                delete ptr->out;
-                delete ptr->file;
-                delete ptr->buff;
-                ptr->mp3 = nullptr;
-                ptr->out = nullptr;
-                ptr->file = nullptr;
-                ptr->buff = nullptr;
+                delete ptr->mp3; ptr->mp3 = nullptr;
+                delete ptr->out; ptr->out = nullptr;
+                delete ptr->file; ptr->file = nullptr;
+                delete ptr->buff; ptr->buff = nullptr;
                 avatar.setMouthOpenRatio(0);
                 avatar.setSpeechText("");
                 M5.Speaker.end();
@@ -56,6 +52,7 @@ String VoiceVox::synthesis(String text) {
     M5.Log.println("VOICEVOX：開始");
     uint32_t start_time = millis();
 
+    HTTPClient https;
     https.setTimeout(https_timeout);
     if (!https.begin(url, root_ca_voicevox)) {
         M5.Log.println("VOICEVOX：接続失敗");
@@ -87,6 +84,7 @@ String VoiceVox::synthesis(String text) {
 
     const String mp3_url = doc["mp3StreamingUrl"].as<String>();
     doc.clear();
+log_free_size("json.clear");
     M5.Log.printf("VOICEVOX：%s(%.1f秒)\n", mp3_url.c_str(), (millis() - start_time) / 1000.0);
     M5.Log.println("VOICEVOX：終了");
     return mp3_url;

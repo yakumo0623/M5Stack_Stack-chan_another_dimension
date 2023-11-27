@@ -41,6 +41,7 @@ String ChatGPT::completions(String text) {
     M5.Log.println("ChatGPT：開始");
     uint32_t start_time = millis();
 
+    HTTPClient https;
     https.setTimeout(https_timeout);
     if (!https.begin(url, root_ca_openai)) {
         M5.Log.println("ChatGPT：接続失敗");
