@@ -84,7 +84,7 @@ String VoiceVox::synthesis(String text) {
 
     const String mp3_url = doc["mp3StreamingUrl"].as<String>();
     doc.clear();
-log_free_size("json.clear");
+
     M5.Log.printf("VOICEVOX：%s(%.1f秒)\n", mp3_url.c_str(), (millis() - start_time) / 1000.0);
     M5.Log.println("VOICEVOX：終了");
     return mp3_url;
