@@ -98,3 +98,4 @@
 ## 特記事項
 
 - ほっぺを付けるために、「m5stack-avatar」の「Mouth.cpp」の26行目に処理を追記しています。（※libの下にあります。）
+- メモリ開放を目的として、「AudioFileSourceHTTPSStream.cpp」の46行目の「http.setReuse(true);」をコメントアウトしています。
