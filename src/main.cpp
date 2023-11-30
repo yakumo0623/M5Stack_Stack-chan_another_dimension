@@ -1,4 +1,5 @@
 #include <SD.h>
+#include <Wire.h>
 #include <M5Unified.h>
 #include <Avatar.h>
 #include <regex>
@@ -12,6 +13,8 @@
 #include "Html.h"
 #include "Weather.h"
 #include "MyFunction.h"
+
+#define CARDKB_ADDR 0x5F
 
 using namespace m5avatar;
 Avatar avatar;
@@ -47,6 +50,8 @@ String config_weather = "130000";          // 天気：東京
 uint16_t https_timeout = 20000;            // HTTPタイムアウト時間
 uint8_t config_history_count = 3;          // ChatGPT履歴の自分の発話最大数
 std::deque<String> chat_history;           // ChatGPT履歴のキュー
+bool i2c_flag = false;                     // i2cを使うか否か
+uint8_t game_mode = 0;                     // ゲームモード(0:じゃんけん, 1：あっちむいてほい)
 
 String speaker_name = "";
 String today_weather;     // 今日の天気
@@ -412,7 +417,7 @@ void janken(String text) {
     }
     else if (text == gesture_text_selected) {
         avatar.setExpression(Expression::Neutral);
-        speech_text = gesture_text_selected + "：ひきわけ";
+        speech_text = gesture_text_selected + "：あいこー";
     }
     else if (text == "ぐー" && gesture_text_selected == "ちょき" ||
         text == "ちょき" && gesture_text_selected == "ぱー" ||
@@ -456,6 +461,17 @@ void hoi(String text) {
     M5.Log.printf("あっちむいてほい：%s %s %s\n", text.c_str(), gesture_text_selected.c_str(), speech_text.c_str());
 }
 
+void execute_text(String text, String expression) {
+    action();
+    if (expression == "Happy") { avatar.setExpression(Expression::Happy); }
+    else if (expression == "Sad") { avatar.setExpression(Expression::Sad); }
+    else if (expression == "Angry") { avatar.setExpression(Expression::Angry); }
+    else if (expression == "Doubt") { avatar.setExpression(Expression::Doubt); }
+    else if (expression == "Sleepy") { avatar.setExpression(Expression::Sleepy); }
+    else { avatar.setExpression(Expression::Neutral); }
+    avatar.setSpeechText(text.c_str());
+}
+
 void setup() {
     get_nvs_config();
     get_nvs_wifi();
@@ -463,6 +479,8 @@ void setup() {
 
     auto cfg = M5.config();
     M5.begin(cfg);
+
+    Wire.begin(M5.Ex_I2C.getSDA(), M5.Ex_I2C.getSCL());
 
     auto spk_cfg = M5.Speaker.config();
     M5.Speaker.config(spk_cfg);
@@ -517,14 +535,9 @@ void setup() {
         request->send(200, "text/html", html_ok());
     });
     server.on("/text", HTTP_ANY, [](AsyncWebServerRequest *request) {
-        action();
-        if (request->arg("expression") == "Happy") { avatar.setExpression(Expression::Happy); }
-        else if (request->arg("expression") == "Sad") { avatar.setExpression(Expression::Sad); }
-        else if (request->arg("expression") == "Angry") { avatar.setExpression(Expression::Angry); }
-        else if (request->arg("expression") == "Doubt") { avatar.setExpression(Expression::Doubt); }
-        else if (request->arg("expression") == "Sleepy") { avatar.setExpression(Expression::Sleepy); }
-        else { avatar.setExpression(Expression::Neutral); }
-        avatar.setSpeechText(request->arg("text").c_str());
+        String text = request->arg("text");
+        String expression = request->arg("expression");
+        execute_text(text, expression);
         request->send(200, "text/html", html_ok());
     });
     server.on("/apikey", HTTP_GET, [](AsyncWebServerRequest *request) {request->send(200, "text/html", html_apikey()); });
@@ -565,7 +578,7 @@ void loop() {
         auto t = M5.Touch.getDetail();
         if (t.wasPressed()) {
             action();
-            if (t.y <= 30 && t.x >= M5.Display.width() - 30) {
+            if (t.y <= 50 && t.x >= M5.Display.width() - 50) {
                 // マシン名とIPアドレスを表示
                 avatar.setSpeechText(config_machine_name.c_str());
                 delay(2000);
@@ -581,7 +594,7 @@ void loop() {
                 return_string = String((set_expression(return_string.c_str())).c_str());  // 表情セット
                 return_string = execute_voicevox(return_string);                          // WebVoiceVox
                 execute_talk(return_string);                                              // 発話
-            } else if (t.y > M5.Display.height() / 2 && t.x <= M5.Display.width() / 2) {
+            } else if (t.y <= 240 && t.y > M5.Display.height() / 2 && t.x <= M5.Display.width() / 2) {
                 // 現在日時を表示
                 avatar.setExpression(Expression::Happy);
                 struct tm timeinfo;
@@ -593,7 +606,7 @@ void loop() {
                 avatar.setSpeechText(datetime.c_str());
                 delay(3000);
                 avatar.setSpeechText("");
-            } else {
+            } else if (t.y <= 240 && t.y > M5.Display.height() / 2 && t.x > M5.Display.width() / 2) {
                 // 天気を表示
                 avatar.setExpression(Expression::Happy);
                 avatar.setSpeechText("今日の天気");
@@ -605,7 +618,7 @@ void loop() {
                 avatar.setSpeechText(tomorrow_weather.c_str());
                 delay(3000);
                 avatar.setSpeechText("");
-            }
+            } else {}
         }
     }
 
@@ -657,5 +670,41 @@ void loop() {
         execute_weather();
         weather_time = millis();
     }
+
+    if (M5.BtnA.wasPressed()) {
+        action();
+        i2c_flag = !i2c_flag;
+        avatar.setSpeechText((i2c_flag == true) ? "I2C：オン" : "I2C：オフ");
+        delay(1000);
+        avatar.setSpeechText("");
+    }
+    if (i2c_flag) {
+        Wire.requestFrom(CARDKB_ADDR, 1);
+        if (Wire.available()) {
+            char c = Wire.read();
+            if (c != 0) { M5.Log.printf("キー入力：%d %c\n", c, c); }
+            if (c == 49 || c == 50 || c == 51) {
+                action();
+                if (game_mode == 0) { game_mode = 1; avatar.setSpeechText("あっちむいてほい"); }
+                else if (game_mode == 1) { game_mode = 0; avatar.setSpeechText("じゃんけん"); }
+                delay(1000);
+                avatar.setSpeechText("");
+            }
+            if (game_mode == 0) {
+                if (c == 180 || c == 181 || c == 182 || c == 183) { avatar.setSpeechText("じゃーんけーん"); }
+                else if (c == 119 || c == 101 || c == 114 || c == 97 || c == 115 || c == 100) { janken("ぐー"); }
+                else if (c == 116 || c == 121 || c == 117 || c == 102 || c == 103 || c == 104) { janken("ちょき"); }
+                else if (c == 105 || c == 111 || c == 112 || c == 106 || c == 107 || c == 108) { janken("ぱー"); }
+            }
+            if (game_mode == 1) {
+                if (c == 180 || c == 181 || c == 182 || c == 183) { avatar.setSpeechText("あっちむいてー"); }
+                else if (c == 53 || c == 54 || c == 55 || c == 116 || c == 121 || c == 117) { hoi("うえ"); }
+                else if (c == 119 || c == 101 || c == 114 || c == 97 || c == 115 || c == 100) { hoi("ひだり"); }
+                else if (c == 105 || c == 111 || c == 112 || c == 106 || c == 107 || c == 108) { hoi("みぎ"); }
+                else if (c == 102 || c == 103 || c == 104 || c == 118 || c == 98 || c == 110) { hoi("した"); }
+            }
+        }
+    }
+
     delay(1);
 }
