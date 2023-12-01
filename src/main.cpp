@@ -52,6 +52,7 @@ uint8_t config_history_count = 3;          // ChatGPT履歴の自分の発話最
 std::deque<String> chat_history;           // ChatGPT履歴のキュー
 bool i2c_flag = false;                     // i2cを使うか否か
 uint8_t game_mode = 0;                     // ゲームモード(0:じゃんけん, 1：あっちむいてほい)
+uint8_t hoi_count = 0;                     // あっちむいてほい 連続数
 
 String speaker_name = "";
 String today_weather;     // 今日の天気
@@ -324,7 +325,7 @@ void get_sdcard_wifi() {
             ssid = "";      // SDカードの内容を入れるためにクリア
             password = "";  // SDカードの内容を入れるためにクリア
             auto fs = SD.open("/wifi.txt", FILE_READ);
-            if(fs) {
+            if (fs) {
                 while (fs.available()) {
                     char currentChar = fs.read();
                     if (currentChar == '\r' || currentChar == '\n') {
@@ -383,10 +384,10 @@ String execute_voicevox(String text) {
     return return_string;
 }
 
-void execute_talk(String text) {
-    if (text == "") { return; }
+void execute_talk(String url) {
+    if (url == "") { return; }
     avatar.setSpeechText("VOICEVOX：");
-    tts->talk(text);
+    tts->talk_https(url);
 }
 
 void execute_weather() {
@@ -418,15 +419,18 @@ void janken(String text) {
     else if (text == gesture_text_selected) {
         avatar.setExpression(Expression::Neutral);
         speech_text = gesture_text_selected + "：あいこー";
+        tts->talk_sd("/mp3/draw.mp3");
     }
     else if (text == "ぐー" && gesture_text_selected == "ちょき" ||
         text == "ちょき" && gesture_text_selected == "ぱー" ||
         text == "ぱー" && gesture_text_selected == "ぐー") {
             avatar.setExpression(Expression::Sad);
             speech_text = gesture_text_selected + "：まけたー";
+            tts->talk_sd("/mp3/lose.mp3");
     } else {
         avatar.setExpression(Expression::Happy);
         speech_text = gesture_text_selected + "：かったー";
+        tts->talk_sd("/mp3/win.mp3");
     }
     avatar.setSpeechText(speech_text.c_str());
     M5.Log.printf("じゃんけん：%s %s %s\n", text.c_str(), gesture_text_selected.c_str(), speech_text.c_str());
@@ -439,6 +443,7 @@ void hoi(String text) {
     String speech_text = "";
 
     action();
+    if (++hoi_count == 5) { gesture_text_selected = text; }
     if (text == "") {
         avatar.setExpression(Expression::Doubt);
         speech_text = "？？？";            
@@ -446,9 +451,12 @@ void hoi(String text) {
     else if (text == gesture_text_selected) {
         avatar.setExpression(Expression::Sad);
         speech_text = gesture_text_selected + "：まけたー";
+        tts->talk_sd("/mp3/lose.mp3");
+        text; hoi_count = 0;
     } else {
         avatar.setExpression(Expression::Happy);
         speech_text = gesture_text_selected + "：せーふ";
+        tts->talk_sd("/mp3/safe.mp3");
     }
     float x = M5.Display.width() / 25;
     float y = M5.Display.height() / 25;
@@ -691,13 +699,19 @@ void loop() {
                 avatar.setSpeechText("");
             }
             if (game_mode == 0) {
-                if (c == 180 || c == 181 || c == 182 || c == 183) { avatar.setSpeechText("じゃーんけーん"); }
+                if (c == 180 || c == 181 || c == 182 || c == 183) {
+                    avatar.setSpeechText("じゃーんけーん");
+                    tts->talk_sd("/mp3/janken.mp3");
+                }
                 else if (c == 119 || c == 101 || c == 114 || c == 97 || c == 115 || c == 100) { janken("ぐー"); }
                 else if (c == 116 || c == 121 || c == 117 || c == 102 || c == 103 || c == 104) { janken("ちょき"); }
                 else if (c == 105 || c == 111 || c == 112 || c == 106 || c == 107 || c == 108) { janken("ぱー"); }
             }
             if (game_mode == 1) {
-                if (c == 180 || c == 181 || c == 182 || c == 183) { avatar.setSpeechText("あっちむいてー"); }
+                if (c == 180 || c == 181 || c == 182 || c == 183) {
+                    avatar.setSpeechText("あっちむいてー");
+                    tts->talk_sd("/mp3/hoi.mp3");
+                }
                 else if (c == 53 || c == 54 || c == 55 || c == 116 || c == 121 || c == 117) { hoi("うえ"); }
                 else if (c == 119 || c == 101 || c == 114 || c == 97 || c == 115 || c == 100) { hoi("ひだり"); }
                 else if (c == 105 || c == 111 || c == 112 || c == 106 || c == 107 || c == 108) { hoi("みぎ"); }

@@ -8,18 +8,22 @@
 #include <AudioGeneratorMP3.h>
 #include "AudioOutputM5Speaker.h"
 #include "AudioFileSourceHTTPSStream.h"
+#include <AudioFileSourceSD.h>
 
 class VoiceVox {
 public:
     VoiceVox();
     ~VoiceVox();
     String synthesis(String text);
-    void talk(String url);
+    void talk_https(String url);
+    void talk_sd(String path);
     AudioGeneratorMP3 *mp3;
-    AudioFileSourceHTTPSStream *file;
+    AudioFileSourceHTTPSStream *file_https;
+    AudioFileSourceSD *file_sd;
     AudioFileSourceBuffer *buff;
     AudioOutputM5Speaker *out;
-    bool is_talking;
+    bool is_talking = false;
+    String talk_type;
 private:
     const String url = "https://api.tts.quest/v3/voicevox/synthesis";
 };
