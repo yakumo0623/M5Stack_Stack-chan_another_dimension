@@ -1,16 +1,10 @@
-#include <Avatar.h>
 #include "Whisper.h"
-#include "rootCA.h"
-
-extern m5avatar::Avatar avatar;
-extern String openai_apikey;
-extern uint16_t https_timeout;
 
 // 送信データ
 // form_data
-//     header_data
-//     record_data(header_data, body_data)
-//     footer_data
+//   + header_data
+//   + record_data(header_data, body_data)
+//   + footer_data
 const String boundary = "123456789000000000000987654321";
 const String header_data = ""\
     "--" + boundary + "\r\n"\

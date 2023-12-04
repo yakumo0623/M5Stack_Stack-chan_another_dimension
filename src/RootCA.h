@@ -1,3 +1,6 @@
+#ifndef ROOTCA_H
+#define ROOTCA_H
+
 namespace {
     const char* root_ca_openai = \
     "-----BEGIN CERTIFICATE-----\n" \
@@ -83,3 +86,5 @@ namespace {
     "-----END CERTIFICATE-----\n" \
     "";
 }
+
+#endif

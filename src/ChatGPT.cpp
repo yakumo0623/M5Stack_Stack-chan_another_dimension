@@ -1,17 +1,4 @@
-#include <Avatar.h>
 #include "ChatGPT.h"
-#include "rootCA.h"
-
-extern m5avatar::Avatar avatar;
-extern String openai_apikey;
-extern uint8_t config_word_count;
-extern String config_tone;
-extern String config_age;
-extern String config_first_person;
-extern String config_second_person;
-extern uint8_t config_history_count;
-extern std::deque<String> chat_history;
-extern uint16_t https_timeout;
 
 // ChatGPTの応答文に改行があった場合に取り除く
 String remove_newline(const String& input) {

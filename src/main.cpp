@@ -9,7 +9,6 @@
 #include "Whisper.h"
 #include "ChatGPT.h"
 #include "VoiceVox.h"
-#include "RootCA.h"
 #include "Html.h"
 #include "Weather.h"
 #include "MyFunction.h"

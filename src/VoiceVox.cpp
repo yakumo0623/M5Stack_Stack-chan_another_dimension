@@ -1,13 +1,4 @@
-#include <Avatar.h>
 #include "VoiceVox.h"
-#include "rootCA.h"
-#include "MyFunction.h"
-
-extern m5avatar::Avatar avatar;
-extern String voicevox_apikey;
-extern uint8_t config_speaker;
-extern uint16_t https_timeout;
-extern String speaker_name;
 
 TaskHandle_t voicevox_task_handle;
 

@@ -2,6 +2,7 @@
 #define _VOICEVOX_H
 
 #include <M5Unified.h>
+#include <Avatar.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 #include <AudioFileSourceBuffer.h>
@@ -9,6 +10,14 @@
 #include "AudioOutputM5Speaker.h"
 #include "AudioFileSourceHTTPSStream.h"
 #include <AudioFileSourceSD.h>
+#include "MyFunction.h"
+#include "RootCA.h"
+
+extern m5avatar::Avatar avatar;
+extern String voicevox_apikey;
+extern uint8_t config_speaker;
+extern uint16_t https_timeout;
+extern String speaker_name;
 
 class VoiceVox {
 public:
