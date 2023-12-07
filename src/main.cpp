@@ -46,7 +46,7 @@ String config_age = "若者";                // 年代
 String config_first_person = "わたし";     // 一人称
 String config_second_person = "あなた";    // 二人称
 String config_weather = "130000";          // 天気：東京
-uint16_t https_timeout = 20000;            // HTTPタイムアウト時間
+uint16_t https_timeout = 60000;            // HTTPタイムアウト時間
 uint8_t config_history_count = 3;          // ChatGPT履歴の自分の発話最大数
 std::deque<String> chat_history;           // ChatGPT履歴のキュー
 bool i2c_flag = false;                     // i2cを使うか否か
@@ -577,6 +577,44 @@ void setup() {
     log_free_size("初期化終了");
 }
 
+// マシン名とIPアドレスを表示
+void show_ip_address() {
+avatar.setSpeechText(config_machine_name.c_str());
+delay(2000);
+String local_ip =  WiFi.localIP().toString();
+avatar.setSpeechText(local_ip.c_str());
+delay(3000);
+avatar.setSpeechText("");
+}
+
+// 現在日時を表示
+void show_date_time() {
+    avatar.setExpression(Expression::Happy);
+    struct tm timeinfo;
+    getLocalTime(&timeinfo);
+    char formatted_time[6];
+    sprintf(formatted_time, "%02d:%02d", timeinfo.tm_hour, timeinfo.tm_min);
+    String datetime = String(timeinfo.tm_mon + 1) + "/" + String(timeinfo.tm_mday) + week[timeinfo.tm_wday];
+    datetime += " " + String(formatted_time);
+    avatar.setSpeechText(datetime.c_str());
+    delay(3000);
+    avatar.setSpeechText("");
+}
+
+// 天気を表示
+void show_weather() {
+    avatar.setExpression(Expression::Happy);
+    avatar.setSpeechText("今日の天気");
+    delay(1000);
+    avatar.setSpeechText(today_weather.c_str());
+    delay(2000);
+    avatar.setSpeechText("明日の天気");
+    delay(1000);
+    avatar.setSpeechText(tomorrow_weather.c_str());
+    delay(3000);
+    avatar.setSpeechText("");
+}
+
 void loop() {
     M5.update();
 
@@ -586,13 +624,7 @@ void loop() {
         if (t.wasPressed()) {
             action();
             if (t.y <= 50 && t.x >= M5.Display.width() - 50) {
-                // マシン名とIPアドレスを表示
-                avatar.setSpeechText(config_machine_name.c_str());
-                delay(2000);
-                String local_ip =  WiFi.localIP().toString();
-                avatar.setSpeechText(local_ip.c_str());
-                delay(3000);
-                avatar.setSpeechText("");
+                show_ip_address();
             } else if (t.y <= M5.Display.height() / 2) {
                 // 会話
                 avatar.setExpression(Expression::Neutral);           
@@ -602,29 +634,9 @@ void loop() {
                 return_string = execute_voicevox(return_string);                          // WebVoiceVox
                 execute_talk(return_string);                                              // 発話
             } else if (t.y <= 240 && t.y > M5.Display.height() / 2 && t.x <= M5.Display.width() / 2) {
-                // 現在日時を表示
-                avatar.setExpression(Expression::Happy);
-                struct tm timeinfo;
-                getLocalTime(&timeinfo);
-                char formatted_time[6];
-                sprintf(formatted_time, "%02d:%02d", timeinfo.tm_hour, timeinfo.tm_min);
-                String datetime = String(timeinfo.tm_mon + 1) + "/" + String(timeinfo.tm_mday) + week[timeinfo.tm_wday];
-                datetime += " " + String(formatted_time);
-                avatar.setSpeechText(datetime.c_str());
-                delay(3000);
-                avatar.setSpeechText("");
+                show_date_time();
             } else if (t.y <= 240 && t.y > M5.Display.height() / 2 && t.x > M5.Display.width() / 2) {
-                // 天気を表示
-                avatar.setExpression(Expression::Happy);
-                avatar.setSpeechText("今日の天気");
-                delay(1000);
-                avatar.setSpeechText(today_weather.c_str());
-                delay(2000);
-                avatar.setSpeechText("明日の天気");
-                delay(1000);
-                avatar.setSpeechText(tomorrow_weather.c_str());
-                delay(3000);
-                avatar.setSpeechText("");
+                show_weather();
             } else {}
         }
     }
